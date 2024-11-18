@@ -1,0 +1,2 @@
+Código: 30 00000043
+Descripción: TACHOMETER

@@ -1,0 +1,2 @@
+Código: 30-000000421333
+Descripción: Medidor de luminosidad
