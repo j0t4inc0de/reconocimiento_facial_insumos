@@ -4,7 +4,7 @@ import tkinter as tk
 from tkinter import ttk
 from ttkthemes import ThemedTk
 from PIL import Image, ImageTk
-from datetime import datetime
+from datetime import datetime # type: ignore
 import os
 
 # ------------------------

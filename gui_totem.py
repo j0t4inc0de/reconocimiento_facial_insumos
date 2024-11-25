@@ -10,7 +10,7 @@ image_path = "inacap_logo.png"
 # Configuración principal de la ventana
 root = ThemedTk(theme="yaru")
 root.title("Interfaz de Herramientas")
-root.geometry("800x1080")
+root.attributes('-fullscreen',True)
 root.configure(bg="white")
 root.iconbitmap(icon_path)
 root.resizable(False, False)

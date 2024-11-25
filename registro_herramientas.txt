@@ -1,1 +1,42 @@
-2024-11-16 22:45:06.425779 - 21351502-0 seleccionó: Herramienta 1, Herramienta 2, Herramienta 4, Herramienta 6, Herramienta 10
+...
+
+Usuario: 21351502-0
+Fecha y hora: 2024-11-22 13:45:00
+Herramientas seleccionadas: Martillo, Destornillador, Llave inglesa
+--------------------------------------------------
+Usuario: 21351502-0
+Fecha y hora: 2024-11-22 13:46:29
+Herramientas seleccionadas: Martillo, Destornillador, Llave inglesa
+--------------------------------------------------
+Usuario: 21351502-0
+Fecha y hora: 2024-11-22 13:46:44
+Herramientas seleccionadas: Sierra
+--------------------------------------------------
+Usuario: 21351502-0
+Fecha y hora: 2024-11-22 13:48:15
+Herramientas seleccionadas: Martillo, Destornillador
+--------------------------------------------------
+Usuario: 21351502-0
+Fecha y hora: 2024-11-22 13:48:30
+Herramientas seleccionadas: Taladro
+--------------------------------------------------
+
+Usuario: 21351502-0
+Fecha y hora: 2024-11-25 01:59:44
+Herramientas seleccionadas: Sierra
+--------------------------------------------------
+
+Usuario: 21351502-0
+Fecha y hora: 2024-11-25 02:01:21
+Herramientas seleccionadas: Sierra
+--------------------------------------------------
+
+Usuario: 21351502-0
+Fecha y hora: 2024-11-25 02:01:37
+Herramientas seleccionadas: Sierra
+--------------------------------------------------
+
+Usuario: 21351502-0
+Fecha y hora: 2024-11-25 02:02:33
+Herramientas seleccionadas: Sierra
+--------------------------------------------------
