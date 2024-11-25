@@ -6,7 +6,6 @@ import face_recognition
 import os
 from datetime import datetime # type: ignore
 
-
 class FacialRecognitionApp:
     def __init__(self, root):
         self.root = root
@@ -126,7 +125,6 @@ class FacialRecognitionApp:
             command=guardar_seleccion
         )
         btn_guardar.pack(pady=20)
-
 
     def cargar_imagenes_alumnos(self):
         # Cargar imágenes del dataset y generar codificaciones
