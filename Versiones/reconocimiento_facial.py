@@ -1,7 +1,7 @@
 ﻿import cv2
 import face_recognition
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta # type: ignore
 import numpy as np
 from colorama import Fore
 import pyttsx3

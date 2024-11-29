@@ -1,2 +1,18 @@
 ...
 
+2024-11-29 14:26:20.285652 - 21351502-0 seleccionó: Herramienta 1, Herramienta 3, Herramienta 4
+
+Usuario: 21351502-0
+Fecha y hora: 2024-11-29 14:32:24
+Herramientas seleccionadas: Martillo, Destornillador, Llave inglesa, Taladro, Sierra
+--------------------------------------------------
+
+Usuario: 21351502-0
+Fecha y hora: 2024-11-29 14:33:34
+Herramientas seleccionadas: 
+--------------------------------------------------
+
+Usuario: 21351502-0
+Fecha y hora: 2024-11-29 14:41:23
+Herramientas seleccionadas: Sierra
+--------------------------------------------------

@@ -6,7 +6,7 @@ import face_recognition
 import os
 from datetime import datetime # type: ignore
 
-class FacialRecognitionApp:
+class sistema_panol:
     def __init__(self, root):
         self.root = root
         self.root.title("Sistema de Reconocimiento Facial")
@@ -17,16 +17,16 @@ class FacialRecognitionApp:
         self.codificaciones = self.cargar_imagenes_alumnos()
         self.inicializar_ventana_principal()
 
+    # Ventana 1: Inicio -------------------------------------
     def inicializar_ventana_principal(self):
-        # Ventana principal con el botón Iniciar
         frame = ttk.Frame(self.root, padding=50)
         frame.pack(expand=True)
 
         btn_iniciar = ttk.Button(frame, text="Iniciar", command=self.abrir_ventana_camara)
         btn_iniciar.pack()
 
+    # Ventana 2: Camara -------------------------------------
     def abrir_ventana_camara(self):
-        # Crear ventana para la cámara
         self.root.withdraw()
         cam_window = tk.Toplevel(self.root)
         cam_window.title("Camara")
@@ -71,8 +71,8 @@ class FacialRecognitionApp:
 
         cam_window.after(100, iniciar_camara)
 
+    # Ventana 3: Herramientas -------------------------------------
     def abrir_ventana_herramientas(self, nombre):
-        # Ventana para selección de herramientas
         tool_window = tk.Toplevel(self.root)
         tool_window.title("Ventana de Herramientas")
         tool_window.geometry("1920x1080")
@@ -85,11 +85,10 @@ class FacialRecognitionApp:
 
         # Lista de herramientas
         herramientas = ["Martillo", "Destornillador", "Llave inglesa", "Taladro", "Sierra"]
-
         # Variables para checkboxes
         seleccion_herramientas = {}  # Diccionario para almacenar las variables
 
-        # Crear checkboxes
+        # Checkboxes
         for herramienta in herramientas:
             var = tk.BooleanVar(value=False)  # Crear una variable para el estado del checkbox
             seleccion_herramientas[herramienta] = var  # Guardar la variable en el diccionario
@@ -97,28 +96,25 @@ class FacialRecognitionApp:
             checkbox.pack(anchor="w", padx=20)
 
         def guardar_seleccion():
-            # Obtener herramientas seleccionadas
+            # Obtener herramientas
             herramientas_seleccionadas = [
                 herramienta for herramienta, var in seleccion_herramientas.items() if var.get()
             ]
-
-            # Guardar en consola con nombre y hora
+            # Imprimir
             fecha_hora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             print(f"Usuario: {nombre}\nFecha y hora: {fecha_hora}\nHerramientas seleccionadas: {herramientas_seleccionadas}")
 
-            # Guardar la información en un archivo
+            # Guardar herramientas en 'registro_herramientas.txt'
             with open("registro_herramientas.txt", "a", encoding="utf-8") as file:
                 file.write(f"\nUsuario: {nombre}\n")
                 file.write(f"Fecha y hora: {fecha_hora}\n")
                 file.write(f"Herramientas seleccionadas: {', '.join(herramientas_seleccionadas)}\n")
                 file.write("-" * 50 + "\n")
 
-            # Mensaje de confirmación
             messagebox.showinfo("Confirmación", "Selección guardada correctamente.")
             tool_window.destroy()
-            self.root.deiconify()  # Volver a la ventana principal
+            self.root.deiconify()  # Volver a la Ventana 1
 
-        # Botón para confirmar selección
         btn_guardar = ttk.Button(
             frame,
             text="Listo",
@@ -127,7 +123,6 @@ class FacialRecognitionApp:
         btn_guardar.pack(pady=20)
 
     def cargar_imagenes_alumnos(self):
-        # Cargar imágenes del dataset y generar codificaciones
         codificaciones = {}
         for nombre_alumno in os.listdir(self.dataset_dir):
             alumno_dir = os.path.join(self.dataset_dir, nombre_alumno)
@@ -139,11 +134,11 @@ class FacialRecognitionApp:
                         codificacion = face_recognition.face_encodings(imagen)
                         if codificacion:
                             codificaciones[nombre_alumno] = codificacion[0]
-                            break  # Solo la primera imagen es suficiente
+                            break
         return codificaciones
 
 
 if __name__ == "__main__":
     root = ThemedTk(theme="arc")
-    app = FacialRecognitionApp(root)
+    app = sistema_panol(root)
     root.mainloop()

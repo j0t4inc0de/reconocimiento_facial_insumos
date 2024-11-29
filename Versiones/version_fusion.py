@@ -7,9 +7,7 @@ from PIL import Image, ImageTk
 from datetime import datetime # type: ignore
 import os
 
-# ------------------------
-# Clase para reconocimiento facial
-# ------------------------
+# Clase para reconocimiento facial - - - - - - - -- - - -
 class SistemaDeRegistro:
     def __init__(self, directorio_alumnos="Dataset"):
         self.directorio_alumnos = directorio_alumnos
@@ -58,9 +56,7 @@ class SistemaDeRegistro:
         cv2.destroyAllWindows()
         return None  # No se identificó a nadie
 
-# ------------------------
-# Interfaz gráfica
-# ------------------------
+# Interfaz gráfica - - - - - - -- - - -
 class InterfazHerramientas:
     def __init__(self, usuario):
         self.usuario = usuario
@@ -99,9 +95,6 @@ class InterfazHerramientas:
         print(f"Herramientas seleccionadas por {self.usuario}: {herramientas_seleccionadas}")
         self.root.destroy()
 
-# ------------------------
-# Ejecución principal
-# ------------------------
 if __name__ == "__main__":
     sistema = SistemaDeRegistro()
     usuario = sistema.iniciar_reconocimiento()

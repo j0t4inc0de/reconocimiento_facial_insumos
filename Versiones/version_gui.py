@@ -4,10 +4,9 @@ from ttkthemes import ThemedTk
 from PIL import Image, ImageTk
 
 # Paths
-icon_path = "icono.ico"
-image_path = "inacap_logo.png"
+icon_path = "img/icono.ico"
+image_path = "img/inacap_logo.png"
 
-# Configuración principal de la ventana
 root = ThemedTk(theme="yaru")
 root.title("Interfaz de Herramientas")
 root.attributes('-fullscreen',True)
@@ -15,19 +14,14 @@ root.configure(bg="white")
 root.iconbitmap(icon_path)
 root.resizable(False, False)
 
-# Carga y redimensionamiento de la imagen de logo
 imagen_original = Image.open(image_path)
 imagen_redimensionada = imagen_original.resize((320, 100))
 imagen_tk = ImageTk.PhotoImage(imagen_redimensionada)
 label_imagen = tk.Label(root, image=imagen_tk, bg="white")
 label_imagen.pack(pady=(20, 10))
-
-# Lista de archivos de imagen y nombres de herramientas
 image_files = [f"img/imagen_{i+1}.png" for i in range(20)]
 tool_names = [f"Herramienta {i+1}" for i in range(20)]
-images = []  # Lista para almacenar objetos de imagen
-
-# Cargar imágenes y almacenarlas
+images = []
 for file in image_files:
     try:
         img = Image.open(file)
@@ -64,13 +58,12 @@ frame_grid.grid(row=1, column=0, pady=10, sticky="nsew")
 
 # Hacer que las columnas y filas se expandan de forma responsiva
 for i in range(5):
-    frame_grid.columnconfigure(i, weight=1, uniform="equal")  # Expansión igual para columnas
+    frame_grid.columnconfigure(i, weight=1, uniform="equal")
 for i in range(4):
-    frame_grid.rowconfigure(i, weight=1, uniform="equal")  # Expansión igual para filas
+    frame_grid.rowconfigure(i, weight=1, uniform="equal")
 
-# Función para redimensionar las imágenes al cambiar el tamaño de la ventana
 def resize_images(event):
-    new_width = event.width // 5 - 20  # Calcula el nuevo tamaño en base al ancho
+    new_width = event.width // 5 - 20 
     new_height = new_width  # Mantener las imágenes cuadradas
 
     resized_images = []
@@ -87,7 +80,6 @@ def resize_images(event):
             button.config(image=resized_images[idx])
             button.image = resized_images[idx]  # Para mantener una referencia
 
-# Crear botones y almacenarlos en una lista para actualización
 buttons = []
 for i in range(4):
     for j in range(5):
@@ -104,7 +96,6 @@ for i in range(4):
             button.grid(row=i, column=j, padx=5, pady=5, sticky="nsew")
             buttons.append(button)
 
-# Botones de control
 frame_control_buttons = tk.Frame(root, bg="white")
 frame_control_buttons.pack(pady=20)
 
@@ -114,7 +105,6 @@ btn_listo.grid(row=0, column=0, padx=10)
 btn_volver = ttk.Button(frame_control_buttons, text="Volver", command=root.destroy)
 btn_volver.grid(row=0, column=1, padx=10)
 
-# Evento de redimensionamiento de la ventana
 frame_grid.bind("<Configure>", resize_images)
 
 root.mainloop()
