@@ -10,15 +10,77 @@ import pandas as pd  # Nueva importación para manejar Excel tambien el modulo o
 
 # Paths
 icon_path = "img/icono.ico"
+logo_path = "img/inacap_logo.png"
 reconociendo_path = "img/reconociendo_rostro.png"
 inventario_path = "Inventario.xlsx"
+
+class CarruselImagenes:
+    def __init__(self, parent, images, interval=2000):
+        self.parent = parent
+        self.images = images
+        self.interval = interval
+        self.current_index = 0
+
+        # Crear un Frame para el carrusel dentro del parent
+        self.frame = ttk.Frame(self.parent)
+        self.frame.pack()
+
+        # Crear un Label para mostrar las imágenes
+        self.label = tk.Label(self.frame)
+        self.label.pack()
+
+        # Cargar las imágenes
+        self.loaded_images = [
+            ImageTk.PhotoImage(Image.open(img).resize((1000, 400)))
+            for img in self.images
+        ]
+
+        # Iniciar el carrusel
+        self.show_image()
+
+    def show_image(self):
+        # Mostrar la imagen actual
+        self.label.config(image=self.loaded_images[self.current_index])
+        # Actualizar el índice para la siguiente imagen
+        self.current_index = (self.current_index + 1) % len(self.loaded_images)
+        # Llamar a esta función de nuevo después de `interval` ms
+        self.parent.after(self.interval, self.show_image)
 
 class VentanaInicio:
     def __init__(self, root, codificaciones):
         self.root = root
+        self.root.configure(bg="white")  # Fondo blanco para la ventana principal
         self.codificaciones = codificaciones
-        self.frame = ttk.Frame(self.root, padding=50)
+
+        # Crear un estilo para que el frame tenga fondo blanco
+        estilo_frame = ttk.Style()
+        estilo_frame.configure("Custom.TFrame", background="#ffffff")
+
+        # Crear el frame con el estilo personalizado
+        self.frame = ttk.Frame(self.root, padding=50, style="Custom.TFrame")
         self.frame.pack(expand=True)
+
+        # Logo encima del carrusel
+        logo_path = "img/inacap_logo.png"  # Ruta del logo
+        try:
+            logo_img = Image.open(logo_path).resize((300, 100))  # Ajusta el tamaño según sea necesario
+            self.logo_tk = ImageTk.PhotoImage(logo_img)
+            logo_label = tk.Label(self.frame, image=self.logo_tk, bg="white")
+            logo_label.pack(pady=(0, 20))  # Espaciado entre el logo y el carrusel
+        except Exception as e:
+            tk.Label(self.frame, text="No se pudo cargar el logo.", bg="white").pack()
+
+        # Carrusel de imágenes
+        ruta_imagenes = "imagenes_carrusel"  # Carpeta donde están las imágenes
+        imagenes = [
+            os.path.join(ruta_imagenes, img)
+            for img in os.listdir(ruta_imagenes)
+            if img.endswith(("png", "jpg", "jpeg"))
+        ]
+        if imagenes:
+            self.carrusel = CarruselImagenes(self.frame, imagenes, interval=5000)
+        else:
+            tk.Label(self.frame, text="No se encontraron imágenes.", bg="white").pack()
 
         # Botón Iniciar
         btn_iniciar = ttk.Button(
