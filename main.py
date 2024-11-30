@@ -6,10 +6,12 @@ import face_recognition
 import os
 from datetime import datetime # type: ignore
 from PIL import Image, ImageTk
+import pandas as pd  # Nueva importación para manejar Excel
 
 # Paths
 icon_path = "img/icono.ico"
 reconociendo_path = "img/reconociendo_rostro.png"
+inventario_path = "Inventario.xlsx"
 
 class VentanaInicio:
     def __init__(self, root, codificaciones):
@@ -18,7 +20,7 @@ class VentanaInicio:
         self.frame = ttk.Frame(self.root, padding=50)
         self.frame.pack(expand=True)
 
-        # Boton Iniciar
+        # Botón Iniciar
         btn_iniciar = ttk.Button(
             self.frame,
             text="Iniciar",
@@ -33,13 +35,12 @@ class VentanaInicio:
         estilo.configure(
             "Tactil.TButton",
             font=("Arial", 10),
-            padding=10
+            padding=5
         )
 
     def abrir_ventana_camara(self):
         self.root.withdraw()
         VentanaCamara(self.root, self.codificaciones)
-
 
 class VentanaCamara:
     def __init__(self, root, codificaciones):
@@ -53,16 +54,15 @@ class VentanaCamara:
 
         self.lbl_status = ttk.Label(self.cam_window, text="Detectando rostro...", background="white", font=("Arial", 16))
         self.lbl_status.pack(pady=20)
-        
+
         imagen_original = Image.open(reconociendo_path)
         imagen_redimensionada = imagen_original.resize((800, 800))
-        self.imagen_tk = ImageTk.PhotoImage(imagen_redimensionada)  # Guardar como atributo de la clase
+        self.imagen_tk = ImageTk.PhotoImage(imagen_redimensionada)
 
         self.label_imagen = ttk.Label(self.cam_window, image=self.imagen_tk)
         self.label_imagen.pack(pady=(20, 10))
 
-        #100 ms
-        self.cam_window.after(100, self.iniciar_camara)
+        self.cam_window.after(50, self.iniciar_camara)
 
     def iniciar_camara(self):
         cap = cv2.VideoCapture(0)
@@ -96,7 +96,6 @@ class VentanaCamara:
         self.cam_window.destroy()
         self.root.deiconify()
 
-
 class VentanaHerramientas:
     def __init__(self, root, nombre):
         self.root = root
@@ -104,50 +103,88 @@ class VentanaHerramientas:
         self.tool_window = tk.Toplevel(self.root)
         self.tool_window.title("Ventana de Herramientas")
         self.tool_window.geometry("1920x1080")
-        self.tool_window.iconbitmap(icon_path)
         self.tool_window.attributes('-fullscreen', True)
         self.tool_window.state("zoomed")
 
-        self.frame = ttk.Frame(self.tool_window, padding=50)
-        self.frame.pack(expand=True)
-
-        # Bienvenido
         ttk.Label(
-            self.frame,
+            self.tool_window,
             text=f"Bienvenido, {self.nombre}",
-            font=("Arial", 15)  # Aumentar el tamaño de la fuente
+            font=("Arial", 15)
         ).pack(pady=10)
 
-        # Lista de herramientas
-        herramientas = ["Martillo", "Destornillador", "Llave inglesa", "Taladro", "Sierra"]
-        self.seleccion_herramientas = {}
+        # Marco principal para contener el canvas y el scrollbar
+        marco_principal = ttk.Frame(self.tool_window)
+        marco_principal.pack(fill="both", expand=True, padx=10, pady=10)
 
+        # Canvas para mostrar los checkboxes
+        canvas = tk.Canvas(marco_principal)
+        canvas.pack(side="left", fill="both", expand=True)
+
+        # Scrollbar
+        scrollbar = ttk.Scrollbar(marco_principal, orient="vertical", command=canvas.yview)
+        scrollbar.pack(side="right", fill="y")
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        # Frame interno dentro del canvas
+        self.frame = ttk.Frame(canvas)
+        canvas.create_window((0, 0), window=self.frame, anchor="center")
+
+        # Detectar cambios en el tamaño del frame
+        self.frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+
+        # Leer las herramientas y Categorias desde el archivo Excel
+        archivo_excel = inventario_path
+        df = pd.read_excel(archivo_excel)
+
+        # Rellenar las Categorias NaN con el valor anterior
+        df['Categoria'] = df['Categoria'].fillna(method='ffill')
+
+        # Crear un diccionario de Categorias
+        herramientas_por_categoria = {}
+        for _, row in df.iterrows():
+            categoria = row['Categoria']
+            herramienta = row['Herramientas']
+            if categoria not in herramientas_por_categoria:
+                herramientas_por_categoria[categoria] = []
+            herramientas_por_categoria[categoria].append(herramienta)
+
+        self.seleccion_herramientas = {}
         estilo = ttk.Style()
         estilo.configure(
             "Tactil.TCheckbutton",
-            font=("Arial", 15),  # Fuente más grande para los checkboxes
-            padding=5  # Relleno interno
+            font=("Arial", 12),  # Ajusta la fuente según el diseño
+            padding=5
         )
 
-        for herramienta in herramientas:
-            var = tk.BooleanVar(value=False)
-            self.seleccion_herramientas[herramienta] = var
-            checkbox = ttk.Checkbutton(
+        # Crear las Categorias y checkboxes
+        for categoria, herramientas in herramientas_por_categoria.items():
+            # Label de la Categoria
+            ttk.Label(
                 self.frame,
-                text=herramienta,
-                variable=var,
-                style="Tactil.TCheckbutton"
-            )
-            checkbox.pack(anchor="w", padx=10, pady=5)  # Espaciado externo para mayor comodidad
+                text=categoria,
+                font=("Arial", 14, "bold")
+            ).pack(anchor="w", pady=(15, 5))  # Espaciado extra antes de cada Categoria
 
-        # Boton Listo
+            # Crear los checkboxes para las herramientas de esta Categoria
+            for herramienta in herramientas:
+                var = tk.BooleanVar(value=False)
+                self.seleccion_herramientas[herramienta] = var
+                checkbox = ttk.Checkbutton(
+                    self.frame,
+                    text=herramienta,
+                    variable=var,
+                    style="Tactil.TCheckbutton"
+                )
+                checkbox.pack(anchor="w", padx=20, pady=2)  # Aumentar margen para alineación clara 
+
+        # Botón "Listo"
         btn_guardar = ttk.Button(
-            self.frame,
+            self.tool_window,
             text="Listo",
             command=self.guardar_seleccion,
             style="Tactil.TButton"
         )
-        btn_guardar.pack(pady=10)
+        btn_guardar.pack(pady=20)
 
     def guardar_seleccion(self):
         herramientas_seleccionadas = [
@@ -163,7 +200,6 @@ class VentanaHerramientas:
         messagebox.showinfo("Confirmación", "Selección guardada correctamente.")
         self.tool_window.destroy()
         self.root.deiconify()
-
 
 class SistemaPanol:
     def __init__(self, root):
