@@ -17,3 +17,8 @@ Usuario: 21351502-0
 Fecha y hora: 2024-11-30 17:34:29
 Herramientas seleccionadas: Sierra electrica
 --------------------------------------------------
+
+Usuario: 21351502-0
+Fecha y hora: 2024-11-30 18:34:04
+Herramientas seleccionadas: Simulador de sensores digital
+--------------------------------------------------
