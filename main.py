@@ -12,7 +12,7 @@ import pandas as pd  # Nueva importación para manejar Excel tambien el modulo o
 icon_path = "img/icono.ico"
 logo_path = "img/inacap_logo.png"
 reconociendo_path = "img/reconociendo_rostro.png"
-inventario_path = "Inventario.xlsx"
+inventario_path = "Excel/Inventario.xlsx"
 ruta_imagenes = "imagenes_carrusel"
 
 class CarruselImagenes:
