@@ -6,7 +6,7 @@ import face_recognition
 import os
 from datetime import datetime # type: ignore
 from PIL import Image, ImageTk
-import pandas as pd  # Nueva importación para manejar Excel
+import pandas as pd  # Nueva importación para manejar Excel tambien el modulo openpyxl
 
 # Paths
 icon_path = "img/icono.ico"
