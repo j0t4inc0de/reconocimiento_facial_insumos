@@ -79,13 +79,13 @@ class VentanaInicio:
         )
         btn_iniciar.pack(padx=5, pady=5)
         btn_iniciar.config(
-            width=15,
+            width=17,
             style="Tactil.TButton"
         )
         estilo = ttk.Style()
         estilo.configure(
             "Tactil.TButton",
-            font=("Arial", 10),
+            font=("Arial", 12),
             padding=5
         )
 
@@ -139,7 +139,7 @@ class VentanaCamara:
 
             if not reconocida:
                 self.lbl_status.config(text="No se reconoce a la persona")
-                cv2.imshow("Cámara", frame)
+                cv2.imshow("Camara", frame)
                 if cv2.waitKey(1) & 0xFF == ord("q"):
                     break
         cap.release()
