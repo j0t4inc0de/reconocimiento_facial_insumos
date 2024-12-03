@@ -13,30 +13,7 @@ icon_path = "img/icono.ico"
 logo_path = "img/inacap_logo.png"
 reconociendo_path = "img/reconociendo_rostro.png"
 inventario_path = "Excel/Inventario.xlsx"
-ruta_imagenes = "imagenes_carrusel"
 
-class CarruselImagenes:
-    def __init__(self, parent, images, interval=2000):
-        self.parent = parent
-        self.images = images
-        self.interval = interval
-        self.current_index = 0
-
-        self.frame = ttk.Frame(self.parent)
-        self.frame.pack()
-        self.label = tk.Label(self.frame)
-        self.label.pack()
-
-        self.loaded_images = [
-            ImageTk.PhotoImage(Image.open(img).resize((1000, 400)))
-            for img in self.images
-        ]
-        self.show_image()
-
-    def show_image(self):
-        self.label.config(image=self.loaded_images[self.current_index])
-        self.current_index = (self.current_index + 1) % len(self.loaded_images)
-        self.parent.after(self.interval, self.show_image)
 
 class VentanaInicio:
     def __init__(self, root, codificaciones):
@@ -59,17 +36,6 @@ class VentanaInicio:
             logo_label.pack(pady=(0, 0))  # Espaciado entre el logo y el carrusel
         except Exception as e:
             tk.Label(self.frame, text="No se pudo cargar el logo.", bg="white").pack()
-
-        # Carrusel de imagenes
-        imagenes = [
-            os.path.join(ruta_imagenes, img)
-            for img in os.listdir(ruta_imagenes)
-            if img.endswith(("png", "jpg", "jpeg"))
-        ]
-        if imagenes:
-            self.carrusel = CarruselImagenes(self.frame, imagenes, interval=5000)
-        else:
-            tk.Label(self.frame, text="No se encontraron imágenes.", bg="white").pack()
 
         # Botón Iniciar
         btn_iniciar = ttk.Button(
