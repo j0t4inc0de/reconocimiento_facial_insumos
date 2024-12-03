@@ -285,4 +285,3 @@ if __name__ == "__main__":
     root = ThemedTk(theme="arc")
     app = SistemaPanol(root)
     root.mainloop()
-    #hola
