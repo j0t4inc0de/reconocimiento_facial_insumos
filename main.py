@@ -251,7 +251,7 @@ class VentanaHerramientas:
             file.write(f"Herramientas seleccionadas: {', '.join(herramientas_seleccionadas)}\n")
             file.write("-" * 70 + "\n")
         
-        messagebox.showinfo("Confirmación", "Volviendo a la página principal.")
+        messagebox.showinfo("Confirmación", f"Tines el pedido N°{id_ticket} \nVolviendo a la página principal.")
         print(f"Se guardó correctamente la selección con ID {id_ticket}.")
         self.tool_window.destroy()
         self.root.deiconify()

@@ -120,3 +120,15 @@ Usuario: 21351502-0
 Fecha y hora: 2024-12-03 23:27:02
 Herramientas seleccionadas: Wattmetro trifásico analógico, Simulador de sensores digital
 ----------------------------------------------------------------------
+----------------------------------------------------------------------
+ID: 23
+Usuario: 21351502-0
+Fecha y hora: 2024-12-04 13:00:06
+Herramientas seleccionadas: Kit de montaje de rodamientos en frío
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+ID: 24
+Usuario: 21351502-0
+Fecha y hora: 2024-12-04 13:02:09
+Herramientas seleccionadas: Extractor
+----------------------------------------------------------------------
