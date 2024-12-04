@@ -14,8 +14,7 @@ icon_path = "img/icono.ico"
 logo_path = "img/inacap_logo.png"
 reconociendo_path = "img/reconociendo_rostro.png"
 inventario_path = "Excel/Inventario.xlsx"
-
-
+    
 class VentanaInicio:
     def __init__(self, root, codificaciones):
         self.root = root
@@ -30,7 +29,7 @@ class VentanaInicio:
 
         self.frame = ttk.Frame(self.root, padding=50, style="Custom.TFrame")
         self.frame.pack(expand=True)
-
+        
         # Logo INACAP
         try:
             logo_img = Image.open(logo_path)
@@ -231,21 +230,48 @@ class VentanaHerramientas:
         btn_guardar.pack(pady=20)
 
     def guardar_seleccion(self):
-        print("- - - - - - - - - - - - - - -\n Se apreto el boton 'Listo' \n\tPara guardar seleccion de herramientas\n- - - - - - - - - - - - - - - -\n")
+        print("- - - - - - - - - - - - - - -\n Se apretó el botón 'Listo' \n\tPara guardar selección de herramientas\n- - - - - - - - - - - - - - - -\n")
         herramientas_seleccionadas = [
             herramienta for herramienta, var in self.seleccion_herramientas.items() if var.get()
         ]
         fecha_hora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        # Obtener el ID único
+        id_ticket = self.generar_id_unico()
+        
+        # Guardar en archivo de registro
         with open("registro_herramientas.txt", "a", encoding="utf-8") as file:
-            file.write(f"\nUsuario: {self.nombre}\n")
+            file.write("-" * 70 + "\n")
+            file.write(f"ID: {id_ticket}\n")
+            file.write(f"Usuario: {self.nombre}\n")
             file.write(f"Fecha y hora: {fecha_hora}\n")
             file.write(f"Herramientas seleccionadas: {', '.join(herramientas_seleccionadas)}\n")
-            file.write("-" * 50 + "\n")
-
-        messagebox.showinfo("Confirmación", "Volviendo a la pagina principal.")
-        print("Se guardo correctamente la seleccion")
+            file.write("-" * 70 + "\n")
+        
+        messagebox.showinfo("Confirmación", "Volviendo a la página principal.")
+        print(f"Se guardó correctamente la selección con ID {id_ticket}.")
         self.tool_window.destroy()
         self.root.deiconify()
+        
+    def generar_id_unico(self):
+        # Ruta del archivo para almacenar el último ID
+        archivo_id = "contador.txt"
+        
+        # Leer el último ID del archivo
+        if os.path.exists(archivo_id):
+            with open(archivo_id, "r", encoding="utf-8") as file:
+                ultimo_id = int(file.read().strip())
+        else:
+            ultimo_id = 0  # Si no existe, iniciar en 0
+        
+        # Incrementar el ID
+        nuevo_id = ultimo_id + 1
+        
+        # Guardar el nuevo ID en el archivo
+        with open(archivo_id, "w", encoding="utf-8") as file:
+            file.write(str(nuevo_id))
+        
+        return nuevo_id
 
 class SistemaPanol:
     def __init__(self, root):
