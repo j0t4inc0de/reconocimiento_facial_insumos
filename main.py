@@ -117,7 +117,7 @@ class VentanaCamara:
 
             if not reconocida:
                 self.lbl_status.config(text="No se reconoce a la persona")
-                cv2.imshow("Cámara", frame)
+                cv2.imshow("Camara", frame)
                 if cv2.waitKey(1) & 0xFF == ord("q"):
                     break
 
