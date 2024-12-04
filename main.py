@@ -86,8 +86,6 @@ class VentanaCamara:
         # 50 ms
         self.cam_window.after(20, self.iniciar_camara)
 
-
-
     def iniciar_camara(self):
         print("- - - - - - - - - - - - - - -\nSe abrió la cámara\n- - - - - - - - - - - - - - - \n")  # Validación
         
