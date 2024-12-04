@@ -75,13 +75,16 @@ class VentanaCamara:
         
         self.lbl_status = ttk.Label(self.cam_window, text="Detectando rostro...", background="white", font=("Arial", 16))
         self.lbl_status.pack(pady=20)
-
-        imagen_original = Image.open(reconociendo_path)
+        
+        imagen_original = Image.open(reconociendo_path).convert("RGB")
         imagen_redimensionada = imagen_original.resize((800, 800))
         self.imagen_tk = ImageTk.PhotoImage(imagen_redimensionada)
-
         self.label_imagen = ttk.Label(self.cam_window, image=self.imagen_tk)
+        self.label_imagen.image = self.imagen_tk  # Asegura que no se elimine la referencia
         self.label_imagen.pack(pady=(20, 10))
+        self.cam_window.update_idletasks()  # Fuerza la actualización de la ventana
+
+            
         # 50 ms
         self.cam_window.after(20, self.iniciar_camara)
 
