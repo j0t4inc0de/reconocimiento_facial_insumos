@@ -21,7 +21,7 @@ class VentanaInicio:
         self.root.configure(bg="white")
         self.codificaciones = codificaciones
         
-        print("- - - - - - - - - - - - - - -\nSe abrio Ventana Inicio\n- - - - - - - - - - - - - - - ") # Validacion
+        print("- - - - - - - - - - - - - - -\nSe abrio Ventana Inicio\n- - - - - - - - - - - - - - - \n") # Validacion
         
         # Frame
         estilo_frame = ttk.Style()
@@ -57,7 +57,7 @@ class VentanaInicio:
         btn_iniciar.pack(padx=5, pady=5)
 
     def abrir_ventana_camara(self):
-        print("- - - - - - - - - - - - - - -\nSe abrio Ventana Camara\n- - - - - - - - - - - - - - - ") # Validacion
+        print("- - - - - - - - - - - - - - -\nSe abrirá la Ventana Camara\n- - - - - - - - - - - - - - - \n") # Validacion
         self.root.withdraw()
         VentanaCamara(self.root, self.codificaciones)
 
@@ -71,7 +71,7 @@ class VentanaCamara:
         self.cam_window.state("zoomed")
         self.cam_window.configure(bg="white")
 
-        print("- - - - - - - - - - - - - - -\nSe abrio Ventana Camara\n- - - - - - - - - - - - - - - ") # Validacion
+        print("- - - - - - - - - - - - - - -\nSe abrio Ventana Camara\n- - - - - - - - - - - - - - - \n") # Validacion
         
         self.lbl_status = ttk.Label(self.cam_window, text="Detectando rostro...", background="white", font=("Arial", 16))
         self.lbl_status.pack(pady=20)
@@ -86,7 +86,7 @@ class VentanaCamara:
         self.cam_window.after(20, self.iniciar_camara)
 
     def iniciar_camara(self):
-        print("- - - - - - - - - - - - - - -\nSe abrio La Camara\n- - - - - - - - - - - - - - - ") # Validacion
+        print("- - - - - - - - - - - - - - -\nSe abrio La Camara\n- - - - - - - - - - - - - - - \n") # Validacion
         
         cap = cv2.VideoCapture(0)
         reconocida = False
@@ -110,7 +110,7 @@ class VentanaCamara:
                         return
 
             if not reconocida:
-                print("- - - - - - --  - - - - - - - -- - - - \nNo se reconocio a nadie\n - - - - - - --  - - - - - - - -- - - - ")
+                print("- - - - - - --  - - - - - - - -- - - - \nNo se reconocio a nadie\n - - - - - - --  - - - - - - - -- - - - \n")
                 
                 self.lbl_status.config(text="No se reconoce a la persona")
                 cv2.imshow("Camara", frame)
@@ -131,7 +131,7 @@ class VentanaHerramientas:
         self.tool_window.attributes('-fullscreen', True)
         self.tool_window.state("zoomed")
         
-        print("- - - - - - - - - - - - - - -\nSe abrio la Ventana de Herramientas\n- - - - - - - - - - - - - - - ") # Validacion
+        print("- - - - - - - - - - - - - - -\nSe abrio la Ventana de Herramientas\n- - - - - - - - - - - - - - - \n") # Validacion
         
         ttk.Label(
             self.tool_window,
@@ -214,7 +214,7 @@ class VentanaHerramientas:
         btn_guardar.pack(pady=20)
 
     def guardar_seleccion(self):
-        print("- - - - - - - - - - - - - - -\n Se apreto el boton 'Listo' \n\tPara guardar seleccion de herramientas\n- - - - - - - - - - - - - - - -")
+        print("- - - - - - - - - - - - - - -\n Se apreto el boton 'Listo' \n\tPara guardar seleccion de herramientas\n- - - - - - - - - - - - - - - -\n")
         herramientas_seleccionadas = [
             herramienta for herramienta, var in self.seleccion_herramientas.items() if var.get()
         ]
