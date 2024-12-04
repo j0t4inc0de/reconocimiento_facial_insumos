@@ -7,6 +7,7 @@ import os
 from datetime import datetime # type: ignore
 from PIL import Image, ImageTk
 import pandas as pd  # Nueva importación para manejar Excel tambien el modulo openpyxl
+import time
 
 # Paths
 icon_path = "img/icono.ico"
@@ -85,15 +86,20 @@ class VentanaCamara:
         # 50 ms
         self.cam_window.after(20, self.iniciar_camara)
 
+
+
     def iniciar_camara(self):
-        print("- - - - - - - - - - - - - - -\nSe abrio La Camara\n- - - - - - - - - - - - - - - \n") # Validacion
+        print("- - - - - - - - - - - - - - -\nSe abrió la cámara\n- - - - - - - - - - - - - - - \n")  # Validación
         
         cap = cv2.VideoCapture(0)
         reconocida = False
+        tiempo_inicio = time.time()
+        
         while True:
             ret, frame = cap.read()
             if not ret:
                 break
+            
             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             rostros = face_recognition.face_locations(frame_rgb)
             codificaciones_rostros = face_recognition.face_encodings(frame_rgb, rostros)
@@ -110,16 +116,22 @@ class VentanaCamara:
                         return
 
             if not reconocida:
-                print("- - - - - - --  - - - - - - - -- - - - \nNo se reconocio a nadie\n - - - - - - --  - - - - - - - -- - - - \n")
-                
                 self.lbl_status.config(text="No se reconoce a la persona")
-                cv2.imshow("Camara", frame)
+                cv2.imshow("Cámara", frame)
                 if cv2.waitKey(1) & 0xFF == ord("q"):
                     break
+
+            tiempo_actual = time.time()
+            if tiempo_actual - tiempo_inicio > 10:
+                print("Tiempo agotado: No se reconoció a nadie en 10 segundos")
+                break
+
         cap.release()
         cv2.destroyAllWindows()
         self.cam_window.destroy()
         self.root.deiconify()
+        print("- - - - - - - - - - - - - - -\nCámara cerrada\n- - - - - - - - - - - - - - - \n")
+
 
 class VentanaHerramientas:
     def __init__(self, root, nombre):
