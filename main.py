@@ -37,7 +37,7 @@ class VentanaInicio:
             logo_img.thumbnail((800, 350)) # Ancho, Alto
             self.logo_tk = ImageTk.PhotoImage(logo_img)
             logo_label = tk.Label(self.frame, image=self.logo_tk, bg="white")
-            logo_label.pack(pady=(0, 0))  # Espaciado entre el logo y el carrusel
+            logo_label.pack(pady=(0, 28))
         except Exception as e:
             tk.Label(self.frame, text="No se pudo cargar el logo.", bg="white").pack()
 
