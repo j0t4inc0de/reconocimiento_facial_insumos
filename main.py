@@ -158,7 +158,14 @@ class VentanaHerramientas:
         canvas.pack(side="left", fill="both", expand=True)
 
         # Scrollbar
-        scrollbar = ttk.Scrollbar(marco_principal, orient="vertical", command=canvas.yview)
+        scrollbar = tk.Scrollbar(
+            marco_principal,
+            orient="vertical",
+            command=canvas.yview,
+            bg="darkgray",              # Color de fondo
+            troughcolor="lightgray",    # Color de la pista
+            width=30                    # Ancho de la barra
+        )
         scrollbar.pack(side="right", fill="y")
         canvas.configure(yscrollcommand=scrollbar.set)
 
