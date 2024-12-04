@@ -30,7 +30,8 @@ class VentanaInicio:
 
         # Logo INACAP
         try:
-            logo_img = Image.open(logo_path).resize((300, 100))  # Ajusta el tamaño según sea necesario
+            logo_img = Image.open(logo_path)
+            logo_img.thumbnail((800, 350)) # Ancho, Alto
             self.logo_tk = ImageTk.PhotoImage(logo_img)
             logo_label = tk.Label(self.frame, image=self.logo_tk, bg="white")
             logo_label.pack(pady=(0, 0))  # Espaciado entre el logo y el carrusel
@@ -38,22 +39,20 @@ class VentanaInicio:
             tk.Label(self.frame, text="No se pudo cargar el logo.", bg="white").pack()
 
         # Botón Iniciar
-        btn_iniciar = ttk.Button(
+        btn_iniciar = tk.Button(
             self.frame,
             text="Iniciar",
-            command=self.abrir_ventana_camara
+            command=self.abrir_ventana_camara,
+            font=("Arial", 14, "bold"),  # Tamaño y estilo de la fuente
+            bg="red",                    # Fondo rojo
+            fg="white",                  # Texto blanco
+            activebackground="#cc0000",  # Fondo rojo más oscuro al presionar
+            activeforeground="white",    # Texto blanco al presionar
+            relief="raised",             # Estilo de borde
+            width=20,                    # Ancho del botón
+            height=2                     # Alto del botón
         )
         btn_iniciar.pack(padx=5, pady=5)
-        btn_iniciar.config(
-            width=17,
-            style="Tactil.TButton"
-        )
-        estilo = ttk.Style()
-        estilo.configure(
-            "Tactil.TButton",
-            font=("Arial", 12),
-            padding=5
-        )
 
     def abrir_ventana_camara(self):
         self.root.withdraw()
@@ -251,4 +250,3 @@ if __name__ == "__main__":
     root = ThemedTk(theme="arc")
     app = SistemaPanol(root)
     root.mainloop()
-    #hola
