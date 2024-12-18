@@ -1,5 +1,6 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk
+from tkinter import messagebox as mb
 from ttkthemes import ThemedTk
 import cv2
 import face_recognition
@@ -190,9 +191,10 @@ class VentanaHerramientas:
         for _, row in df.iterrows():
             categoria = row['Categoria']
             herramienta = row['Herramientas']
+            existencias = row['Existencias']
             if categoria not in herramientas_por_categoria:
                 herramientas_por_categoria[categoria] = []
-            herramientas_por_categoria[categoria].append(herramienta)
+            herramientas_por_categoria[categoria].append({"herramienta":herramienta, "existencias":existencias})
 
         self.seleccion_herramientas = {}
         estilo = ttk.Style()
@@ -212,12 +214,17 @@ class VentanaHerramientas:
             ).pack(anchor="w", pady=(15, 5))  # Espaciado extra antes de cada Categoria
 
             # Crear los checkboxes para las herramientas de esta Categoria
-            for herramienta in herramientas:
+            for herramienta_data in herramientas:
+                herramienta = herramienta_data["herramienta"]
+                existencias = herramienta_data["existencias"]
+
+                texto_checkbox = f"{herramienta} \t🡺 Disponibles:\t( {existencias} )"
+
                 var = tk.BooleanVar(value=False)
                 self.seleccion_herramientas[herramienta] = var
                 checkbox = ttk.Checkbutton(
                     self.frame,
-                    text=herramienta,
+                    text=texto_checkbox,
                     variable=var,
                     style="Tactil.TCheckbutton"
                 )
@@ -231,6 +238,17 @@ class VentanaHerramientas:
             style="Tactil.TButton"
         )
         btn_guardar.pack(pady=20)
+        # Estilo btn guardar
+        btn_guardar.config(
+            width=12,
+            style="Tactical.TButton"
+        )
+        estilo = ttk.Style()
+        estilo.configure(
+            "Tactical.TButton",
+            font=("Arial", 14),
+            padding=5
+        )
 
     def guardar_seleccion(self):
         print("- - - - - - - - - - - - - - -\n Se apretó el botón 'Listo' \n\tPara guardar selección de herramientas\n- - - - - - - - - - - - - - - -\n")
@@ -251,7 +269,7 @@ class VentanaHerramientas:
             file.write(f"Herramientas seleccionadas: {', '.join(herramientas_seleccionadas)}\n")
             file.write("-" * 70 + "\n")
         
-        messagebox.showinfo("Confirmación", "Volviendo a la página principal.")
+        mb.showinfo("Confirmación", f"Tienes el pedido Nª{id_ticket} \nVolviendo al menu principal.")
         print(f"Se guardó correctamente la selección con ID {id_ticket}.")
         self.tool_window.destroy()
         self.root.deiconify()
