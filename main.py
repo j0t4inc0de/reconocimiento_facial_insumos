@@ -191,7 +191,7 @@ class VentanaHerramientas:
                 herramienta = herramienta_data["herramienta"]
                 existencias = herramienta_data["existencia"]
 
-                texto_checkbox = f"{herramienta} \t🡺 Disponibles:\t( {existencias} )"
+                texto_checkbox = f"{herramienta} \t 🡺 \t( {existencias} )"
                 var = tk.BooleanVar(value=False)
                 self.seleccion_herramientas[herramienta] = var
 
