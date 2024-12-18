@@ -299,3 +299,9 @@ Usuario: 21351502-0
 Fecha y hora: 2024-12-18 11:37:39
 Herramientas seleccionadas: 
 ----------------------------------------------------------------------
+----------------------------------------------------------------------
+ID: 51
+Usuario: 21351502-0
+Fecha y hora: 2024-12-18 11:51:00
+Herramientas seleccionadas: Medidor de aislamiento analógico, Medidor de luminosidad, Medidor de potencia, Medidor de vibraciones
+----------------------------------------------------------------------
