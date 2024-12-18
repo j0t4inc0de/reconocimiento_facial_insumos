@@ -1,3 +1,4 @@
+import sqlite3
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox as mb
@@ -15,7 +16,8 @@ icon_path = "img/icono.ico"
 logo_path = "img/inacap_logo.png"
 reconociendo_path = "img/reconociendo_rostro.png"
 inventario_path = "Excel/Inventario.xlsx"
-    
+database_path = "inventario.db"
+
 class VentanaInicio:
     def __init__(self, root, codificaciones):
         self.root = root
@@ -143,112 +145,99 @@ class VentanaHerramientas:
         self.tool_window.geometry("1920x1080")
         self.tool_window.attributes('-fullscreen', True)
         self.tool_window.state("zoomed")
-        
-        print("- - - - - - - - - - - - - - -\nSe abrio la Ventana de Herramientas\n- - - - - - - - - - - - - - - \n") # Validacion
-        
+
+        print("- - - - - - - - - - - - - - -\nSe abrio la Ventana de Herramientas\n- - - - - - - - - - - - - - - \n")
+
         ttk.Label(
             self.tool_window,
             text=f"Bienvenido, {self.nombre}",
             font=("Arial", 15)
         ).pack(pady=10)
 
-        # Marco principal para contener el canvas y el scrollbar
+        # Configuración del Canvas y Scrollbar
         marco_principal = ttk.Frame(self.tool_window)
         marco_principal.pack(fill="both", expand=True, padx=10, pady=10)
 
-        # Canvas para mostrar los checkboxes
         canvas = tk.Canvas(marco_principal)
         canvas.pack(side="left", fill="both", expand=True)
 
-        # Scrollbar
-        scrollbar = tk.Scrollbar(
-            marco_principal,
-            orient="vertical",
-            command=canvas.yview,
-            bg="darkgray",              # Color de fondo
-            troughcolor="lightgray",    # Color de la pista
-            width=30                    # Ancho de la barra
-        )
+        scrollbar = tk.Scrollbar(marco_principal, orient="vertical", command=canvas.yview)
         scrollbar.pack(side="right", fill="y")
         canvas.configure(yscrollcommand=scrollbar.set)
 
-        # Frame interno dentro del canvas
         self.frame = ttk.Frame(canvas)
         canvas.create_window((0, 0), window=self.frame, anchor="center")
-
-        # Detectar cambios en el tamaño del frame
         self.frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
 
-        # Leer las herramientas y Categorias desde el archivo Excel
-        archivo_excel = inventario_path
-        df = pd.read_excel(archivo_excel)
-
-        # Rellenar las Categorias NaN con el valor anterior
-        df['Categoria'] = df['Categoria'].fillna(method='ffill')
-
-        # Crear un diccionario de Categorias
-        herramientas_por_categoria = {}
-        for _, row in df.iterrows():
-            categoria = row['Categoria']
-            herramienta = row['Herramientas']
-            existencias = row['Existencias']
-            if categoria not in herramientas_por_categoria:
-                herramientas_por_categoria[categoria] = []
-            herramientas_por_categoria[categoria].append({"herramienta":herramienta, "existencias":existencias})
-
+        # Leer datos desde SQLite
+        database_path = "inventario.db"
         self.seleccion_herramientas = {}
-        estilo = ttk.Style()
-        estilo.configure(
-            "Tactil.TCheckbutton",
-            font=("Arial", 12),  # Ajusta la fuente según el diseño
-            padding=5
-        )
+        herramientas_por_categoria = self.obtener_herramientas_por_categoria(database_path)
 
-        # Crear las Categorias y checkboxes
+        # Crear checkboxes y categorías
+        estilo = ttk.Style()
+        estilo.configure("Tactil.TCheckbutton", font=("Arial", 12), padding=5)
+
         for categoria, herramientas in herramientas_por_categoria.items():
-            # Label de la Categoria
+            # Etiqueta de la categoría
             ttk.Label(
                 self.frame,
                 text=categoria,
                 font=("Arial", 14, "bold")
-            ).pack(anchor="w", pady=(15, 5))  # Espaciado extra antes de cada Categoria
+            ).pack(anchor="w", pady=(15, 5))
 
-            # Crear los checkboxes para las herramientas de esta Categoria
+            # Checkboxes para cada herramienta
             for herramienta_data in herramientas:
                 herramienta = herramienta_data["herramienta"]
-                existencias = herramienta_data["existencias"]
+                existencias = herramienta_data["existencia"]
 
                 texto_checkbox = f"{herramienta} \t🡺 Disponibles:\t( {existencias} )"
-
                 var = tk.BooleanVar(value=False)
                 self.seleccion_herramientas[herramienta] = var
+
                 checkbox = ttk.Checkbutton(
                     self.frame,
                     text=texto_checkbox,
                     variable=var,
                     style="Tactil.TCheckbutton"
                 )
-                checkbox.pack(anchor="w", padx=20, pady=2)  # Aumentar margen para alineación clara 
+                checkbox.pack(anchor="w", padx=20, pady=2)
 
         # Botón "Listo"
-        btn_guardar = ttk.Button(
-            self.tool_window,
-            text="Listo",
-            command=self.guardar_seleccion,
-            style="Tactil.TButton"
-        )
+        btn_guardar = ttk.Button(self.tool_window, text="Listo", command=self.guardar_seleccion)
         btn_guardar.pack(pady=20)
-        # Estilo btn guardar
-        btn_guardar.config(
-            width=12,
-            style="Tactical.TButton"
-        )
-        estilo = ttk.Style()
-        estilo.configure(
-            "Tactical.TButton",
-            font=("Arial", 14),
-            padding=5
-        )
+        
+    def obtener_herramientas_por_categoria(self, db_path):
+        """Consulta la base de datos SQLite y devuelve un diccionario con categorías y herramientas."""
+        herramientas_por_categoria = {}
+
+        try:
+            # Conexión a la base de datos
+            conn = sqlite3.connect(db_path)
+            cursor = conn.cursor()
+
+            # Consulta SQL para obtener todas las herramientas agrupadas por categoría
+            query = """
+                SELECT Categoria, Herramienta, Existencia
+                FROM herramientas
+                ORDER BY Categoria;
+            """
+            cursor.execute(query)
+            resultados = cursor.fetchall()
+
+            # Procesar los resultados en un diccionario
+            for categoria, herramienta, existencias in resultados:
+                if categoria not in herramientas_por_categoria:
+                    herramientas_por_categoria[categoria] = []
+                herramientas_por_categoria[categoria].append(
+                    {"herramienta": herramienta, "existencia": existencias}
+                )
+
+            conn.close()
+        except sqlite3.Error as e:
+            print("Error al conectar a la base de datos:", e)
+
+        return herramientas_por_categoria
 
     def guardar_seleccion(self):
         print("- - - - - - - - - - - - - - -\n Se apretó el botón 'Listo' \n\tPara guardar selección de herramientas\n- - - - - - - - - - - - - - - -\n")
@@ -269,11 +258,7 @@ class VentanaHerramientas:
             file.write(f"Herramientas seleccionadas: {', '.join(herramientas_seleccionadas)}\n")
             file.write("-" * 70 + "\n")
         
-<<<<<<< HEAD
         mb.showinfo("Confirmación", f"Tienes el pedido Nª{id_ticket} \nVolviendo al menu principal.")
-=======
-        messagebox.showinfo("Confirmación", f"Tines el pedido N°{id_ticket} \nVolviendo a la página principal.")
->>>>>>> ffcd2031e409d26342bf3eac849456be2ff56dbf
         print(f"Se guardó correctamente la selección con ID {id_ticket}.")
         self.tool_window.destroy()
         self.root.deiconify()
