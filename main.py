@@ -161,7 +161,15 @@ class VentanaHerramientas:
         canvas = tk.Canvas(marco_principal)
         canvas.pack(side="left", fill="both", expand=True)
 
-        scrollbar = tk.Scrollbar(marco_principal, orient="vertical", command=canvas.yview)
+        # Scrollbar
+        scrollbar = tk.Scrollbar(
+            marco_principal,
+            orient="vertical",
+            command=canvas.yview,
+            bg="darkgray",              # Color de fondo
+            troughcolor="lightgray",    # Color de la pista
+            width=30                    # Ancho de la barra
+        )
         scrollbar.pack(side="right", fill="y")
         canvas.configure(yscrollcommand=scrollbar.set)
 
@@ -203,15 +211,32 @@ class VentanaHerramientas:
                 )
                 checkbox.pack(anchor="w", padx=20, pady=2)
 
-        # Botones "Listo" y "Salir" centrados y en fila
+        # Botones "Listo" y "Salir" centrados y agrandados
         frame_botones = ttk.Frame(self.tool_window)
         frame_botones.pack(pady=20)
 
-        btn_guardar = ttk.Button(frame_botones, text="Listo", command=self.guardar_seleccion)
-        btn_guardar.pack(side="left", padx=20)  # Botón "Listo"
+        btn_guardar = ttk.Button(
+            frame_botones, 
+            text="Listo", 
+            command=self.guardar_seleccion,
+            style="Big.TButton"  # Usar un estilo personalizado
+        )
+        btn_guardar.pack(side="left", padx=20)
 
-        btn_salir = ttk.Button(frame_botones, text="Salir", command=self.salir_ventana_herramientas)
-        btn_salir.pack(side="left", padx=20)  # Botón "Salir"
+        btn_salir = ttk.Button(
+            frame_botones, 
+            text="Salir", 
+            command=self.salir_ventana_herramientas,
+            style="Big.TButton"  # Usar el mismo estilo
+        )
+        btn_salir.pack(side="left", padx=20)
+
+        # Estilo personalizado para agrandar botones
+        style = ttk.Style()
+        style.configure("Big.TButton", 
+                        font=("Arial", 14, "bold"),  # Aumentar el tamaño de la fuente
+                        padding=(15, 5))  # Ajustar el padding interno del botón
+
 
         
     def obtener_herramientas_por_categoria(self, db_path):
