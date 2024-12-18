@@ -125,12 +125,18 @@ Herramientas seleccionadas: Wattmetro trifásico analógico, Simulador de sensor
 ----------------------------------------------------------------------
 ID: 23
 Usuario: 21351502-0
+<<<<<<< HEAD
 Fecha y hora: 2024-12-04 10:03:33
 Herramientas seleccionadas: Micrómetro interior 50-75mm 0.01mm, Micrómetro interior 75-100mm 0.01mm, Multímetro digital, Pie de metro 0.05mm, 200mm
+=======
+Fecha y hora: 2024-12-04 13:00:06
+Herramientas seleccionadas: Kit de montaje de rodamientos en frío
+>>>>>>> ffcd2031e409d26342bf3eac849456be2ff56dbf
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 ID: 24
 Usuario: 21351502-0
+<<<<<<< HEAD
 Fecha y hora: 2024-12-04 10:04:43
 Herramientas seleccionadas: Medidor de luminosidad, Medidor de potencia, Regleta conexión 4MM negro
 ----------------------------------------------------------------------
@@ -293,3 +299,8 @@ Usuario: 21351502-0
 Fecha y hora: 2024-12-13 15:11:07
 Herramientas seleccionadas: Analizador de vibraciones
 ----------------------------------------------------------------------
+=======
+Fecha y hora: 2024-12-04 13:02:09
+Herramientas seleccionadas: Extractor
+----------------------------------------------------------------------
+>>>>>>> ffcd2031e409d26342bf3eac849456be2ff56dbf
