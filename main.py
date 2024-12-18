@@ -203,9 +203,16 @@ class VentanaHerramientas:
                 )
                 checkbox.pack(anchor="w", padx=20, pady=2)
 
-        # Botón "Listo"
-        btn_guardar = ttk.Button(self.tool_window, text="Listo", command=self.guardar_seleccion)
-        btn_guardar.pack(pady=20)
+        # Botones "Listo" y "Salir" centrados y en fila
+        frame_botones = ttk.Frame(self.tool_window)
+        frame_botones.pack(pady=20)
+
+        btn_guardar = ttk.Button(frame_botones, text="Listo", command=self.guardar_seleccion)
+        btn_guardar.pack(side="left", padx=20)  # Botón "Listo"
+
+        btn_salir = ttk.Button(frame_botones, text="Salir", command=self.salir_ventana_herramientas)
+        btn_salir.pack(side="left", padx=20)  # Botón "Salir"
+
         
     def obtener_herramientas_por_categoria(self, db_path):
         """Consulta la base de datos SQLite y devuelve un diccionario con categorías y herramientas."""
@@ -238,17 +245,58 @@ class VentanaHerramientas:
             print("Error al conectar a la base de datos:", e)
 
         return herramientas_por_categoria
+    
+    def verificar_stock(self, herramientas_seleccionadas):
+        """Verifica si las herramientas seleccionadas tienen stock disponible."""
+        db_path = "inventario.db"
+        herramientas_sin_stock = []
+
+        try:
+            # Conexión a la base de datos
+            conn = sqlite3.connect(db_path)
+            cursor = conn.cursor()
+
+            # Revisar el stock para cada herramienta seleccionada
+            for herramienta in herramientas_seleccionadas:
+                cursor.execute("SELECT Existencia FROM herramientas WHERE Herramienta = ?", (herramienta,))
+                resultado = cursor.fetchone()
+
+                if resultado and resultado[0] <= 0:
+                    herramientas_sin_stock.append(herramienta)
+
+            conn.close()
+        except sqlite3.Error as e:
+            print("Error al verificar el stock en la base de datos:", e)
+            mb.showerror("Error", "Hubo un problema al verificar el stock.")
+
+        return herramientas_sin_stock
 
     def guardar_seleccion(self):
         print("- - - - - - - - - - - - - - -\n Se apretó el botón 'Listo' \n\tPara guardar selección de herramientas\n- - - - - - - - - - - - - - - -\n")
         herramientas_seleccionadas = [
             herramienta for herramienta, var in self.seleccion_herramientas.items() if var.get()
         ]
+
+        if not herramientas_seleccionadas:
+            mb.showwarning("Advertencia", "No has seleccionado ninguna herramienta.")
+            return
+
+        # Verificar el stock de las herramientas seleccionadas
+        herramientas_sin_stock = self.verificar_stock(herramientas_seleccionadas)
+
+        if herramientas_sin_stock:
+            mensaje = f"No puedes seleccionar herramientas sin stock:\n{', '.join(herramientas_sin_stock)}"
+            mb.showerror("Error", mensaje)
+            print(mensaje)
+            return  # Salir del método sin continuar
+
+        # Si todas las herramientas tienen stock, continuar
         fecha_hora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        
-        # Obtener el ID único
         id_ticket = self.generar_id_unico()
-        
+
+        # Actualizar base de datos y descontar existencias
+        self.actualizar_existencias(herramientas_seleccionadas)
+
         # Guardar en archivo de registro
         with open("registro_herramientas.txt", "a", encoding="utf-8") as file:
             file.write("-" * 70 + "\n")
@@ -257,11 +305,49 @@ class VentanaHerramientas:
             file.write(f"Fecha y hora: {fecha_hora}\n")
             file.write(f"Herramientas seleccionadas: {', '.join(herramientas_seleccionadas)}\n")
             file.write("-" * 70 + "\n")
-        
-        mb.showinfo("Confirmación", f"Tienes el pedido Nª{id_ticket} \nVolviendo al menu principal.")
+
+        mb.showinfo("Confirmación", f"Tienes el pedido Nª{id_ticket} \nVolviendo al menú principal.")
         print(f"Se guardó correctamente la selección con ID {id_ticket}.")
         self.tool_window.destroy()
         self.root.deiconify()
+
+    def salir_ventana_herramientas(self):
+        """Cierra la ventana de herramientas y vuelve a la principal."""
+        print("Se apretó el botón 'Salir'. Volviendo a la ventana principal.")
+        self.tool_window.destroy()  # Cierra la ventana actual
+        self.root.deiconify()  # Vuelve a mostrar la ventana principal
+
+    def actualizar_existencias(self, herramientas_seleccionadas):
+        """Descuenta las existencias de las herramientas seleccionadas en la base de datos."""
+        db_path = "inventario.db"
+
+        try:
+            # Conexión a la base de datos
+            conn = sqlite3.connect(db_path)
+            cursor = conn.cursor()
+
+            # Actualizar existencias
+            for herramienta in herramientas_seleccionadas:
+                # Verificar las existencias actuales
+                cursor.execute("SELECT Existencia FROM herramientas WHERE Herramienta = ?", (herramienta,))
+                resultado = cursor.fetchone()
+
+                if resultado and resultado[0] > 0:
+                    nueva_existencia = resultado[0] - 1
+                    cursor.execute("UPDATE herramientas SET Existencia = ? WHERE Herramienta = ?", (nueva_existencia, herramienta))
+                    print(f"Existencia actualizada para {herramienta}: {nueva_existencia}")
+                else:
+                    print(f"Advertencia: {herramienta} no tiene existencias disponibles.")
+                    mb.showwarning("Sin existencias", f"No hay existencias disponibles para {herramienta}.")
+
+            # Guardar los cambios y cerrar la conexión
+            conn.commit()
+            conn.close()
+
+        except sqlite3.Error as e:
+            print("Error al actualizar la base de datos:", e)
+            mb.showerror("Error", "Hubo un problema al actualizar las existencias.")
+
         
     def generar_id_unico(self):
         # Ruta del archivo para almacenar el último ID
