@@ -237,8 +237,6 @@ class VentanaHerramientas:
                         font=("Arial", 14, "bold"),  # Aumentar el tamaño de la fuente
                         padding=(15, 5))  # Ajustar el padding interno del botón
 
-
-        
     def obtener_herramientas_por_categoria(self, db_path):
         """Consulta la base de datos SQLite y devuelve un diccionario con categorías y herramientas."""
         herramientas_por_categoria = {}
