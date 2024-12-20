@@ -3,38 +3,16 @@ Historial de Herramientas - INACAP
 ----------------------------------------------------------------------
 
 ----------------------------------------------------------------------
+
+----------------------------------------------------------------------
 ID: 1
-Usuario: 21351502-0
-Fecha y hora: 2024-12-18 11:52:27
-Herramientas seleccionadas: Analizador de particulas, Analizador de vibraciones
+Usuario: Juan Erices
+Fecha y hora: 2024-12-20 12:12:38
+Herramientas seleccionadas: Analizador de vibraciones, Camara termografica, Equipo medidor de espesores
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 ID: 2
-Usuario: 21351502-0
-Fecha y hora: 2024-12-18 11:57:43
-Herramientas seleccionadas: Analizador de particulas
-----------------------------------------------------------------------
-----------------------------------------------------------------------
-ID: 3
-Usuario: 21351502-0
-Fecha y hora: 2024-12-18 11:59:21
-Herramientas seleccionadas: Analizador de particulas
-----------------------------------------------------------------------
-----------------------------------------------------------------------
-ID: 4
-Usuario: 21351502-0
-Fecha y hora: 2024-12-18 12:31:00
-Herramientas seleccionadas: Analizador de particulas
-----------------------------------------------------------------------
-----------------------------------------------------------------------
-ID: 5
-Usuario: 21351502-0
-Fecha y hora: 2024-12-18 12:32:41
-Herramientas seleccionadas: 
-----------------------------------------------------------------------
-----------------------------------------------------------------------
-ID: 6
-Usuario: 21351502-0
-Fecha y hora: 2024-12-18 23:04:23
+Usuario: Juan Erices
+Fecha y hora: 2024-12-20 12:13:05
 Herramientas seleccionadas: Analizador de vibraciones
 ----------------------------------------------------------------------

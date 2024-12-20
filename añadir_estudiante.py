@@ -6,7 +6,7 @@ import os
 import shutil
 
 # Ruta de la base de datos y directorio de imágenes
-database_path = "inventario.db"
+database_path = "Database/inventario.db"
 dataset_dir = "Dataset"
 
 # Crear tabla de estudiantes si no existe

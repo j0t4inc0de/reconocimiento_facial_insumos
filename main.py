@@ -16,7 +16,7 @@ icon_path = "img/icono.ico"
 logo_path = "img/inacap_logo.png"
 reconociendo_path = "img/reconociendo_rostro.png"
 inventario_path = "Excel/Inventario.xlsx"
-database_path = "inventario.db"
+database_path = "Database/inventario.db"
 
 class VentanaInicio:
     def __init__(self, root, codificaciones):
@@ -178,7 +178,7 @@ class VentanaHerramientas:
         self.frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
 
         # Leer datos desde SQLite
-        database_path = "inventario.db"
+        # database_path = "inventario.db"
         self.seleccion_herramientas = {}
         herramientas_por_categoria = self.obtener_herramientas_por_categoria(database_path)
 
@@ -271,7 +271,7 @@ class VentanaHerramientas:
     
     def verificar_stock(self, herramientas_seleccionadas):
         """Verifica si las herramientas seleccionadas tienen stock disponible."""
-        db_path = "inventario.db"
+        db_path = database_path
         herramientas_sin_stock = []
 
         try:
@@ -342,7 +342,7 @@ class VentanaHerramientas:
 
     def actualizar_existencias(self, herramientas_seleccionadas):
         """Descuenta las existencias de las herramientas seleccionadas en la base de datos."""
-        db_path = "inventario.db"
+        db_path = database_path
 
         try:
             # Conexión a la base de datos
@@ -374,7 +374,7 @@ class VentanaHerramientas:
         
     def generar_id_unico(self):
         # Ruta del archivo para almacenar el último ID
-        archivo_id = "contador.txt"
+        archivo_id = "Database/contador.txt"
         
         # Leer el último ID del archivo
         if os.path.exists(archivo_id):
