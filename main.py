@@ -145,9 +145,9 @@ class VentanaHerramientas:
         self.tool_window = tk.Toplevel(self.root)
         self.tool_window.title("Ventana de Herramientas")
         self.tool_window.geometry("1920x1080")
-        self.tool_window.attributes('-fullscreen', True)
+        # self.tool_window.attributes('-fullscreen', True)
         self.tool_window.state("zoomed")
-
+        self.tool_window.iconbitmap(icon_path)
         print("- - - - - - - - - - - - - - -\nSe abrió la Ventana de Herramientas\n- - - - - - - - - - - - - - - \n")
 
         ttk.Label(
@@ -297,14 +297,15 @@ class VentanaHerramientas:
         self.btn_guardar["state"] = "disabled"
 
         if not herramientas_seleccionadas:
-            mb.showwarning("Advertencia", "No has seleccionado ninguna herramienta.")
+            # Mostrar el messagebox y vincularlo a la ventana actual
+            mb.showwarning("Advertencia", "No has seleccionado ninguna herramienta.", parent=self.tool_window)
             self.btn_guardar["state"] = "normal"
             return
 
         herramientas_sin_stock = self.verificar_stock(herramientas_seleccionadas)
         if herramientas_sin_stock:
             mensaje = f"No puedes seleccionar herramientas sin stock:\n{', '.join(herramientas_sin_stock)}"
-            mb.showerror("Error", mensaje)
+            mb.showerror("Error", mensaje, parent=self.tool_window)
             self.btn_guardar["state"] = "normal"
             return
 
@@ -320,10 +321,11 @@ class VentanaHerramientas:
             file.write(f"Herramientas seleccionadas: {', '.join(herramientas_seleccionadas)}\n")
             file.write("-" * 70 + "\n")
 
-        mb.showinfo("Confirmación", f"Tienes el pedido Nª{id_ticket} \nVolviendo al menú principal.")
+        mb.showinfo("Confirmación", f"Tienes el pedido Nª{id_ticket} \nVolviendo al menú principal.", parent=self.tool_window)
         print(f"Se guardó correctamente la selección con ID {id_ticket}.")
         self.tool_window.destroy()
         self.root.deiconify()
+
 
     def salir_ventana_herramientas(self):
         """Cierra la ventana de herramientas y vuelve a la principal."""

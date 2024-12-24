@@ -64,3 +64,21 @@ Usuario: Juan Erices
 Fecha y hora: 2024-12-24 18:51:06
 Herramientas seleccionadas: Conjunto manorreductor
 ----------------------------------------------------------------------
+----------------------------------------------------------------------
+ID: 11
+Usuario: Juan Erices
+Fecha y hora: 2024-12-24 18:55:48
+Herramientas seleccionadas: Extractor de dos patas
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+ID: 12
+Usuario: Juan Erices
+Fecha y hora: 2024-12-24 19:01:53
+Herramientas seleccionadas: Limpia inyectores diésel
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+ID: 13
+Usuario: Juan Erices
+Fecha y hora: 2024-12-24 19:02:29
+Herramientas seleccionadas: Limpia inyectores diésel
+----------------------------------------------------------------------
