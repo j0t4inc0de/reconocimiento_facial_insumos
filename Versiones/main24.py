@@ -19,12 +19,12 @@ inventario_path = "Excel/Inventario.xlsx"
 database_path = "Database/inventario.db"
 
 class VentanaInicio:
-    print("- - - - - - - - - - - - - - -\nSe abrio Ventana Inicio\n- - - - - - - - - - - - - - - \n") # Validacion
     def __init__(self, root, codificaciones):
         self.root = root
         self.root.configure(bg="white")
         self.codificaciones = codificaciones
         
+        print("- - - - - - - - - - - - - - -\nSe abrio Ventana Inicio\n- - - - - - - - - - - - - - - \n") # Validacion
         
         # Frame
         estilo_frame = ttk.Style()
@@ -95,7 +95,6 @@ class VentanaCamara:
         print("- - - - - - - - - - - - - - -\nSe abrió la cámara\n- - - - - - - - - - - - - - - \n")  # Validación
         
         cap = cv2.VideoCapture(0)
-
         reconocida = False
         tiempo_inicio = time.time()
         
@@ -103,6 +102,7 @@ class VentanaCamara:
             ret, frame = cap.read()
             if not ret:
                 break
+            
             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             rostros = face_recognition.face_locations(frame_rgb)
             codificaciones_rostros = face_recognition.face_encodings(frame_rgb, rostros)
@@ -110,7 +110,6 @@ class VentanaCamara:
             for codificacion in codificaciones_rostros:
                 for nombre, referencia in self.codificaciones.items():
                     if face_recognition.compare_faces([referencia], codificacion)[0]:
-                        print("- - - - - - - - - - - - - - -\nESTUDIANTE/DOCENTE RECONOCIDO\n- - - - - - - - - - - - - - - \n")
                         self.lbl_status.config(text=f"Reconocido: {nombre}")
                         reconocida = True
                         cap.release()
@@ -121,7 +120,6 @@ class VentanaCamara:
 
             if not reconocida:
                 self.lbl_status.config(text="No se reconoce a la persona")
-                print(f"- - - - - - - - - - - - - - -\nNO SE RECONOCIO A LA PERSONA, ESPERANDO 10 SEGUNDOS\n- - - - - - - - - - - - - - - \n")
                 cv2.imshow("Camara", frame)
                 if cv2.waitKey(1) & 0xFF == ord("q"):
                     break
@@ -129,14 +127,14 @@ class VentanaCamara:
             tiempo_actual = time.time()
             if tiempo_actual - tiempo_inicio > 10:
                 print("Tiempo agotado: No se reconoció a nadie en 10 segundos")
-                print("- - - - - - - - - - - - - - -\nNO SE RECONOCIO A LA PERSONA, SE CIERRA CAMARA!!!!\n- - - - - - - - - - - - - - - \n")
                 break
 
-        print("- - - - - - - - - - - - - - -\nCámara cerrada\n- - - - - - - - - - - - - - - \n")
         cap.release()
         cv2.destroyAllWindows()
         self.cam_window.destroy()
         self.root.deiconify()
+        print("- - - - - - - - - - - - - - -\nCámara cerrada\n- - - - - - - - - - - - - - - \n")
+
 
 class VentanaHerramientas:
     def __init__(self, root, nombre):
@@ -148,7 +146,7 @@ class VentanaHerramientas:
         self.tool_window.attributes('-fullscreen', True)
         self.tool_window.state("zoomed")
 
-        print("- - - - - - - - - - - - - - -\nSe abrió la Ventana de Herramientas\n- - - - - - - - - - - - - - - \n")
+        print("- - - - - - - - - - - - - - -\nSe abrio la Ventana de Herramientas\n- - - - - - - - - - - - - - - \n")
 
         ttk.Label(
             self.tool_window,
@@ -163,13 +161,14 @@ class VentanaHerramientas:
         canvas = tk.Canvas(marco_principal)
         canvas.pack(side="left", fill="both", expand=True)
 
+        # Scrollbar
         scrollbar = tk.Scrollbar(
             marco_principal,
             orient="vertical",
             command=canvas.yview,
-            bg="darkgray",
-            troughcolor="lightgray",
-            width=30
+            bg="darkgray",              # Color de fondo
+            troughcolor="lightgray",    # Color de la pista
+            width=30                    # Ancho de la barra
         )
         scrollbar.pack(side="right", fill="y")
         canvas.configure(yscrollcommand=scrollbar.set)
@@ -178,19 +177,24 @@ class VentanaHerramientas:
         canvas.create_window((0, 0), window=self.frame, anchor="center")
         self.frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
 
+        # Leer datos desde SQLite
+        # database_path = "inventario.db"
         self.seleccion_herramientas = {}
         herramientas_por_categoria = self.obtener_herramientas_por_categoria(database_path)
 
+        # Crear checkboxes y categorías
         estilo = ttk.Style()
         estilo.configure("Tactil.TCheckbutton", font=("Arial", 12), padding=5)
 
         for categoria, herramientas in herramientas_por_categoria.items():
+            # Etiqueta de la categoría
             ttk.Label(
                 self.frame,
                 text=categoria,
                 font=("Arial", 14, "bold")
             ).pack(anchor="w", pady=(15, 5))
 
+            # Checkboxes para cada herramienta
             for herramienta_data in herramientas:
                 herramienta = herramienta_data["herramienta"]
                 existencias = herramienta_data["existencia"]
@@ -207,28 +211,31 @@ class VentanaHerramientas:
                 )
                 checkbox.pack(anchor="w", padx=20, pady=2)
 
+        # Botones "Listo" y "Salir" centrados y agrandados
         frame_botones = ttk.Frame(self.tool_window)
         frame_botones.pack(pady=20)
 
-        # Referencia directa al botón "Listo"
-        self.btn_guardar = ttk.Button(
-            frame_botones,
-            text="Listo",
+        btn_guardar = ttk.Button(
+            frame_botones, 
+            text="Listo", 
             command=self.guardar_seleccion,
-            style="Big.TButton"
+            style="Big.TButton"  # Usar un estilo personalizado
         )
-        self.btn_guardar.pack(side="left", padx=20)
+        btn_guardar.pack(side="left", padx=20)
 
         btn_salir = ttk.Button(
-            frame_botones,
-            text="Salir",
+            frame_botones, 
+            text="Salir", 
             command=self.salir_ventana_herramientas,
-            style="Big.TButton"
+            style="Big.TButton"  # Usar el mismo estilo
         )
         btn_salir.pack(side="left", padx=20)
 
+        # Estilo personalizado para agrandar botones
         style = ttk.Style()
-        style.configure("Big.TButton", font=("Arial", 14, "bold"), padding=(15, 5))
+        style.configure("Big.TButton", 
+                        font=("Arial", 14, "bold"),  # Aumentar el tamaño de la fuente
+                        padding=(15, 5))  # Ajustar el padding interno del botón
 
     def obtener_herramientas_por_categoria(self, db_path):
         """Consulta la base de datos SQLite y devuelve un diccionario con categorías y herramientas."""
@@ -288,30 +295,32 @@ class VentanaHerramientas:
         return herramientas_sin_stock
 
     def guardar_seleccion(self):
-        print("- - - - - - - - - - - - - - -\nSe apretó el botón 'Listo'\nPara guardar selección de herramientas\n- - - - - - - - - - - - - - - \n")
+        print("- - - - - - - - - - - - - - -\n Se apretó el botón 'Listo' \n\tPara guardar selección de herramientas\n- - - - - - - - - - - - - - - -\n")
         herramientas_seleccionadas = [
             herramienta for herramienta, var in self.seleccion_herramientas.items() if var.get()
         ]
 
-        # Deshabilitar el botón "Listo" mientras se procesa
-        self.btn_guardar["state"] = "disabled"
-
         if not herramientas_seleccionadas:
             mb.showwarning("Advertencia", "No has seleccionado ninguna herramienta.")
-            self.btn_guardar["state"] = "normal"
             return
 
+        # Verificar el stock de las herramientas seleccionadas
         herramientas_sin_stock = self.verificar_stock(herramientas_seleccionadas)
+
         if herramientas_sin_stock:
             mensaje = f"No puedes seleccionar herramientas sin stock:\n{', '.join(herramientas_sin_stock)}"
             mb.showerror("Error", mensaje)
-            self.btn_guardar["state"] = "normal"
-            return
+            print(mensaje)
+            return  # Salir del método sin continuar
 
+        # Si todas las herramientas tienen stock, continuar
         fecha_hora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         id_ticket = self.generar_id_unico()
+
+        # Actualizar base de datos y descontar existencias
         self.actualizar_existencias(herramientas_seleccionadas)
 
+        # Guardar en archivo de registro
         with open("registro_herramientas.txt", "a", encoding="utf-8") as file:
             file.write("-" * 70 + "\n")
             file.write(f"ID: {id_ticket}\n")
