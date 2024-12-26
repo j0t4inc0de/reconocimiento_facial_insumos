@@ -168,7 +168,7 @@ class VentanaHerramientas:
             command=canvas.yview,
             bg="darkgray",              # Color de fondo
             troughcolor="lightgray",    # Color de la pista
-            width=30                    # Ancho de la barra
+            width=30                   # Ancho de la barra
         )
         scrollbar.pack(side="right", fill="y")
         canvas.configure(yscrollcommand=scrollbar.set)

@@ -143,92 +143,316 @@ class VentanaHerramientas:
         self.root = root
         self.nombre = nombre
         self.tool_window = tk.Toplevel(self.root)
-        self.tool_window.title("Ventana de Herramientas")
+        self.tool_window.title("Sistema de Préstamo")
         self.tool_window.geometry("1920x1080")
-        # self.tool_window.attributes('-fullscreen', True)
         self.tool_window.state("zoomed")
         self.tool_window.iconbitmap(icon_path)
+        self.tool_window.configure(bg="#f0f2f5")
+
         print("- - - - - - - - - - - - - - -\nSe abrió la Ventana de Herramientas\n- - - - - - - - - - - - - - - \n")
 
+        # Encabezado con diseño moderno
+        header_frame = ttk.Frame(self.tool_window, style="Header.TFrame")
+        header_frame.pack(fill="x", pady=(0, 20))
+        
+        # Estilo para el encabezado
+        style = ttk.Style()
+        style.configure("Header.TFrame", background="#ffffff")
+        style.configure("Header.TLabel", 
+                       background="#ffffff",
+                       font=("Segoe UI", 24, "bold"),
+                       foreground="#E53935")
+
         ttk.Label(
-            self.tool_window,
+            header_frame,
             text=f"Bienvenido, {self.nombre}",
-            font=("Arial", 15)
-        ).pack(pady=10)
+            style="Header.TLabel"
+        ).pack(pady=20)
 
-        # Configuración del Canvas y Scrollbar
-        marco_principal = ttk.Frame(self.tool_window)
-        marco_principal.pack(fill="both", expand=True, padx=10, pady=10)
+        # Marco principal
+        main_frame = ttk.Frame(self.tool_window, style="Card.TFrame")
+        main_frame.pack(fill="both", expand=True, padx=40, pady=(0, 20))
 
-        canvas = tk.Canvas(marco_principal)
-        canvas.pack(side="left", fill="both", expand=True)
+        # Canvas con estilo moderno
+        canvas = tk.Canvas(main_frame, bg="#ffffff", highlightthickness=0)
+        canvas.pack(side="left", fill="both", expand=True, padx=(0, 20))
 
+        # Scrollbar personalizada con ancho aumentado
         scrollbar = tk.Scrollbar(
-            marco_principal,
+            main_frame,
             orient="vertical",
             command=canvas.yview,
-            bg="darkgray",
-            troughcolor="lightgray",
-            width=30
+            width=40  # Ancho aumentado significativamente
         )
         scrollbar.pack(side="right", fill="y")
+        
+        # Configurar el canvas
         canvas.configure(yscrollcommand=scrollbar.set)
+        self.frame = ttk.Frame(canvas, style="Content.TFrame")
+        # Establecer un ancho fijo para el frame interno
+        canvas.create_window((0, 0), window=self.frame, anchor="nw", width=700)  # Ancho fijo para el contenido
 
-        self.frame = ttk.Frame(canvas)
-        canvas.create_window((0, 0), window=self.frame, anchor="center")
-        self.frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+        # Estilos actualizados
+        style.configure("Content.TFrame", background="#ffffff")
+        style.configure("Category.TLabel",
+                       font=("Segoe UI", 16, "bold"),
+                       background="#ffffff",
+                       foreground="#E53935")
+        
+        # Estilo específico para los checkbuttons con ancho aumentado
+        style.configure("Wide.TCheckbutton", 
+                       font=("Segoe UI", 12),
+                       background="#ffffff",
+                       foreground="#333333")
+
+        # Botones modernos
+        style.configure("Modern.TButton",
+                       font=("Segoe UI", 12, "bold"),
+                       padding=(20, 10),
+                       background="#E53935")
 
         self.seleccion_herramientas = {}
         herramientas_por_categoria = self.obtener_herramientas_por_categoria(database_path)
 
-        estilo = ttk.Style()
-        estilo.configure("Tactil.TCheckbutton", font=("Arial", 12), padding=5)
-
+        # Agregar las herramientas
         for categoria, herramientas in herramientas_por_categoria.items():
+            categoria_frame = ttk.Frame(self.frame, style="Content.TFrame")
+            categoria_frame.pack(fill="x", padx=30, pady=(20, 10))
+            
             ttk.Label(
-                self.frame,
+                categoria_frame,
                 text=categoria,
-                font=("Arial", 14, "bold")
-            ).pack(anchor="w", pady=(15, 5))
+                style="Category.TLabel"
+            ).pack(anchor="w")
 
             for herramienta_data in herramientas:
                 herramienta = herramienta_data["herramienta"]
                 existencias = herramienta_data["existencia"]
 
-                texto_checkbox = f"{herramienta} \t 🡺 \t( {existencias} )"
+                tool_frame = ttk.Frame(self.frame, style="Content.TFrame")
+                tool_frame.pack(fill="x", padx=50, pady=5)
+
                 var = tk.BooleanVar(value=False)
                 self.seleccion_herramientas[herramienta] = var
 
+                # Frame contenedor para el checkbox y el texto de existencias
+                checkbox_frame = ttk.Frame(tool_frame, style="Content.TFrame")
+                checkbox_frame.pack(fill="x", expand=True)
+
+                # Checkbox en el lado izquierdo
                 checkbox = ttk.Checkbutton(
-                    self.frame,
-                    text=texto_checkbox,
+                    checkbox_frame,
+                    text=herramienta,
                     variable=var,
-                    style="Tactil.TCheckbutton"
+                    style="Wide.TCheckbutton"
                 )
-                checkbox.pack(anchor="w", padx=20, pady=2)
+                checkbox.pack(side="left", fill="x", expand=True)
 
-        frame_botones = ttk.Frame(self.tool_window)
-        frame_botones.pack(pady=20)
+                # Label de existencias en el lado derecho
+                stock_label = ttk.Label(
+                    checkbox_frame,
+                    text=f"Disponibles: {existencias}",
+                    background="#ffffff",
+                    font=("Segoe UI", 12),
+                    foreground="#333333",
+                )
+                stock_label.pack(side="right", padx=(0, 100))
 
-        # Referencia directa al botón "Listo"
-        self.btn_guardar = ttk.Button(
-            frame_botones,
-            text="Listo",
+        # Frame para botones
+        button_frame = ttk.Frame(self.tool_window, style="Content.TFrame")
+        button_frame.pack(pady=30)
+
+        # Estilo de botón personalizado usando tk.Button
+        button_style = {
+            'font': ('Segoe UI', 12, 'bold'),
+            'bg': '#E53935',
+            'fg': 'white',
+            'activebackground': '#C62828',
+            'activeforeground': 'white',
+            'relief': 'flat',
+            'padx': 20,
+            'pady': 10,
+            'border': 0,
+            'cursor': 'hand2'
+        }
+
+        self.btn_guardar = tk.Button(
+            button_frame,
+            text="Confirmar préstamo",
             command=self.guardar_seleccion,
-            style="Big.TButton"
+            **button_style
         )
-        self.btn_guardar.pack(side="left", padx=20)
+        self.btn_guardar.pack(side="left", padx=10)
 
-        btn_salir = ttk.Button(
-            frame_botones,
-            text="Salir",
+        btn_cancelar = tk.Button(
+            button_frame,
+            text="Cancelar",
             command=self.salir_ventana_herramientas,
-            style="Big.TButton"
+            **button_style
         )
-        btn_salir.pack(side="left", padx=20)
+        btn_cancelar.pack(side="left", padx=10)
 
-        style = ttk.Style()
-        style.configure("Big.TButton", font=("Arial", 14, "bold"), padding=(15, 5))
+        # Agregar hover effect
+        def on_enter(e):
+            e.widget['background'] = '#E53935'
+
+        def on_leave(e):
+            e.widget['background'] = '#E53935'
+
+        # Bind hover events para ambos botones
+        for button in (self.btn_guardar, btn_cancelar):
+            button.bind("<Enter>", on_enter)
+            button.bind("<Leave>", on_leave)
+
+        # Bind para actualizar el scrollregion
+        self.frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+        
+        # Actualizar el canvas
+        self.tool_window.update_idletasks()
+        canvas.configure(scrollregion=canvas.bbox("all"))
+
+    def obtener_herramientas_por_categoria(self, db_path):
+        """Consulta la base de datos SQLite y devuelve un diccionario con categorías y herramientas."""
+        herramientas_por_categoria = {}
+
+        try:
+            # Conexión a la base de datos
+            conn = sqlite3.connect(db_path)
+            cursor = conn.cursor()
+
+            # Consulta SQL para obtener todas las herramientas agrupadas por categoría
+            query = """
+                SELECT Categoria, Herramienta, Existencia
+                FROM herramientas
+                ORDER BY Categoria;
+            """
+            cursor.execute(query)
+            resultados = cursor.fetchall()
+
+            # Procesar los resultados en un diccionario
+            for categoria, herramienta, existencias in resultados:
+                if categoria not in herramientas_por_categoria:
+                    herramientas_por_categoria[categoria] = []
+                herramientas_por_categoria[categoria].append(
+                    {"herramienta": herramienta, "existencia": existencias}
+                )
+
+            conn.close()
+        except sqlite3.Error as e:
+            print("Error al conectar a la base de datos:", e)
+
+        return herramientas_por_categoria
+    
+    def verificar_stock(self, herramientas_seleccionadas):
+        """Verifica si las herramientas seleccionadas tienen stock disponible."""
+        db_path = database_path
+        herramientas_sin_stock = []
+
+        try:
+            conn = sqlite3.connect(db_path)
+            cursor = conn.cursor()
+
+            for herramienta in herramientas_seleccionadas:
+                cursor.execute("SELECT Existencia FROM herramientas WHERE Herramienta = ?", (herramienta,))
+                resultado = cursor.fetchone()
+
+                if resultado and resultado[0] <= 0:
+                    herramientas_sin_stock.append(herramienta)
+
+            conn.close()
+        except sqlite3.Error as e:
+            print("Error al verificar el stock en la base de datos:", e)
+            mb.showerror("Error", "Hubo un problema al verificar el stock.")
+
+        return herramientas_sin_stock
+
+    def guardar_seleccion(self):
+        print("- - - - - - - - - - - - - - -\nSe apretó el botón 'Listo'\nPara guardar selección de herramientas\n- - - - - - - - - - - - - - - \n")
+        herramientas_seleccionadas = [
+            herramienta for herramienta, var in self.seleccion_herramientas.items() if var.get()
+        ]
+
+        self.btn_guardar["state"] = "disabled"
+
+        if not herramientas_seleccionadas:
+            mb.showwarning("Advertencia", "No has seleccionado ninguna herramienta.", parent=self.tool_window)
+            self.btn_guardar["state"] = "normal"
+            return
+
+        herramientas_sin_stock = self.verificar_stock(herramientas_seleccionadas)
+        if herramientas_sin_stock:
+            mensaje = f"No puedes seleccionar herramientas sin stock:\n{', '.join(herramientas_sin_stock)}"
+            mb.showerror("Error", mensaje, parent=self.tool_window)
+            self.btn_guardar["state"] = "normal"
+            return
+
+        fecha_hora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        id_ticket = self.generar_id_unico()
+        self.actualizar_existencias(herramientas_seleccionadas)
+
+        with open("registro_herramientas.txt", "a", encoding="utf-8") as file:
+            file.write("-" * 70 + "\n")
+            file.write(f"ID: {id_ticket}\n")
+            file.write(f"Usuario: {self.nombre}\n")
+            file.write(f"Fecha y hora: {fecha_hora}\n")
+            file.write(f"Herramientas seleccionadas: {', '.join(herramientas_seleccionadas)}\n")
+            file.write("-" * 70 + "\n")
+
+        mb.showinfo("Confirmación", f"Tienes el pedido Nª{id_ticket} \nVolviendo al menú principal.", parent=self.tool_window)
+        print(f"Se guardó correctamente la selección con ID {id_ticket}.")
+        self.tool_window.destroy()
+        self.root.deiconify()
+
+    def salir_ventana_herramientas(self):
+        """Cierra la ventana de herramientas y vuelve a la principal."""
+        print("Se apretó el botón 'Salir'. Volviendo a la ventana principal.")
+        self.tool_window.destroy()
+        self.root.deiconify()
+
+    def actualizar_existencias(self, herramientas_seleccionadas):
+        """Descuenta las existencias de las herramientas seleccionadas en la base de datos."""
+        db_path = database_path
+
+        try:
+            conn = sqlite3.connect(db_path)
+            cursor = conn.cursor()
+
+            for herramienta in herramientas_seleccionadas:
+                cursor.execute("SELECT Existencia FROM herramientas WHERE Herramienta = ?", (herramienta,))
+                resultado = cursor.fetchone()
+
+                if resultado and resultado[0] > 0:
+                    nueva_existencia = resultado[0] - 1
+                    cursor.execute("UPDATE herramientas SET Existencia = ? WHERE Herramienta = ?", (nueva_existencia, herramienta))
+                    print(f"Existencia actualizada para {herramienta}: {nueva_existencia}")
+                else:
+                    print(f"Advertencia: {herramienta} no tiene existencias disponibles.")
+                    mb.showwarning("Sin existencias", f"No hay existencias disponibles para {herramienta}.")
+
+            conn.commit()
+            conn.close()
+
+        except sqlite3.Error as e:
+            print("Error al actualizar la base de datos:", e)
+            mb.showerror("Error", "Hubo un problema al actualizar las existencias.")
+
+    def generar_id_unico(self):
+        archivo_id = "Database/contador.txt"
+        
+        if os.path.exists(archivo_id):
+            with open(archivo_id, "r", encoding="utf-8") as file:
+                ultimo_id = int(file.read().strip())
+        else:
+            ultimo_id = 0
+        
+        nuevo_id = ultimo_id + 1
+        
+        with open(archivo_id, "w", encoding="utf-8") as file:
+            file.write(str(nuevo_id))
+        
+        return nuevo_id
+
+    # El resto de los métodos permanecen igual
 
     def obtener_herramientas_por_categoria(self, db_path):
         """Consulta la base de datos SQLite y devuelve un diccionario con categorías y herramientas."""
