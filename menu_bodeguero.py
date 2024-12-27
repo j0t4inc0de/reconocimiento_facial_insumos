@@ -7,51 +7,26 @@ import os
 database_path = "Database/inventario.db"
 dataset_dir = "Dataset"
 
-# def crear_tabla_pedidos():
-#     try:
-#         conn = sqlite3.connect(database_path)
-#         cursor = conn.cursor()
-#         cursor.execute('''
-#             CREATE TABLE IF NOT EXISTS pedidos (
-#                 id INTEGER PRIMARY KEY,
-#                 usuario TEXT,
-#                 fechaHora TEXT,
-#                 herramientas TEXT
-#             )
-#         ''')
-#         conn.commit()
-#         conn.close()
-#     except sqlite3.Error as e:
-#         print("Error al crear la tabla pedidos:", e)
-
-# crear_tabla_pedidos()
-
 class VentanaInicio(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
 
-        # Título de la ventana
         ttk.Label(self, text="Lista de Pedidos", font=("Arial", 18)).pack(pady=10)
 
-        # Crear el Treeview
         columnas = ("id", "usuario", "fechaHora", "herramientas", "estado")
         self.tree = ttk.Treeview(self, columns=columnas, show="headings")
         
-        # Configurar encabezados
         self.tree.heading("id", text="ID")
         self.tree.heading("usuario", text="Usuario")
         self.tree.heading("fechaHora", text="Fecha y Hora")
         self.tree.heading("herramientas", text="Herramientas")
         self.tree.heading("estado", text="Herramientas")
-
-        # Configurar tamaños de las columnas
         self.tree.column("id", width=15, anchor="center")
         self.tree.column("usuario", width=90, anchor="center")
         self.tree.column("fechaHora", width=100, anchor="center")
         self.tree.column("herramientas", width=450, anchor="center")
         self.tree.column("estado", width=100, anchor="center")
 
-        # Empaquetar el Treeview
         self.tree.pack(fill="both", expand=True, padx=10, pady=10)
 
         # Cargar los datos desde la base de datos
@@ -62,13 +37,9 @@ class VentanaInicio(tk.Frame):
         try:
             conn = sqlite3.connect(database_path)
             cursor = conn.cursor()
-
-            # Obtener todos los registros de la tabla pedidos
             cursor.execute("SELECT * FROM pedidos")
             registros = cursor.fetchall()
             conn.close()
-
-            # Insertar los registros en el Treeview
             for registro in registros:
                 self.tree.insert("", "end", values=registro)
 
@@ -79,30 +50,23 @@ class VentanaHistorial(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
 
-        # Título de la ventana
         ttk.Label(self, text="Historial", font=("Arial", 18)).pack(pady=10)
 
-        # Crear el Treeview
         columnas = ("id", "N° Pedido", "herramientas", "fechaHora")
         self.tree = ttk.Treeview(self, columns=columnas, show="headings")
         
-        # Configurar encabezados
         self.tree.heading("id", text="ID")
         self.tree.heading("N° Pedido", text="N° Pedido")
         self.tree.heading("fechaHora", text="Fecha y Hora")
         self.tree.heading("herramientas", text="Herramientas")
         self.tree.heading("fechaHora", text="fechaHora")
-
-        # Configurar tamaños de las columnas
         self.tree.column("id", width=10, anchor="center")
         self.tree.column("N° Pedido", width=20, anchor="center")
         self.tree.column("herramientas", width=550, anchor="center")
         self.tree.column("fechaHora", width=50, anchor="center")
 
-        # Empaquetar el Treeview
         self.tree.pack(fill="both", expand=True, padx=10, pady=10)
 
-        # Cargar los datos desde la base de datos
         self.cargar_pedidos()
 
     def cargar_pedidos(self):
@@ -111,12 +75,9 @@ class VentanaHistorial(tk.Frame):
             conn = sqlite3.connect(database_path)
             cursor = conn.cursor()
 
-            # Obtener todos los registros de la tabla pedidos
             cursor.execute("SELECT * FROM historial")
             registros = cursor.fetchall()
             conn.close()
-
-            # Insertar los registros en el Treeview
             for registro in registros:
                 self.tree.insert("", "end", values=registro)
 
