@@ -3,94 +3,38 @@ Historial de Herramientas - INACAP
 ----------------------------------------------------------------------
 
 ----------------------------------------------------------------------
-
-----------------------------------------------------------------------
 ID: 1
 Usuario: Juan Erices
-Fecha y hora: 2024-12-20 12:12:38
-Herramientas seleccionadas: Analizador de vibraciones, Camara termografica, Equipo medidor de espesores
+Fecha y hora: 2024-12-27 02:22:28
+Herramientas seleccionadas: Sierra electrica
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 ID: 2
 Usuario: Juan Erices
-Fecha y hora: 2024-12-20 12:13:05
-Herramientas seleccionadas: Analizador de vibraciones
+Fecha y hora: 2024-12-27 02:25:48
+Herramientas seleccionadas: M.Profundidad 0-300mm 0.01mm
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 ID: 3
 Usuario: Juan Erices
-Fecha y hora: 2024-12-24 18:43:18
-Herramientas seleccionadas: Extractor
+Fecha y hora: 2024-12-27 02:29:08
+Herramientas seleccionadas: Medidor presión de combustible
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 ID: 4
 Usuario: Juan Erices
-Fecha y hora: 2024-12-24 18:43:19
-Herramientas seleccionadas: Extractor
+Fecha y hora: 2024-12-27 02:30:27
+Herramientas seleccionadas: Medidor de aislamiento analógico
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 ID: 5
 Usuario: Juan Erices
-Fecha y hora: 2024-12-24 18:43:19
-Herramientas seleccionadas: Extractor
+Fecha y hora: 2024-12-27 02:34:21
+Herramientas seleccionadas: Regleta conexión 4MM negro
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 ID: 6
 Usuario: Juan Erices
-Fecha y hora: 2024-12-24 18:43:20
-Herramientas seleccionadas: Extractor
-----------------------------------------------------------------------
-----------------------------------------------------------------------
-ID: 7
-Usuario: Juan Erices
-Fecha y hora: 2024-12-24 18:46:22
-Herramientas seleccionadas: Manómetro
-----------------------------------------------------------------------
-----------------------------------------------------------------------
-ID: 8
-Usuario: Juan Erices
-Fecha y hora: 2024-12-24 18:46:23
-Herramientas seleccionadas: Manómetro
-----------------------------------------------------------------------
-----------------------------------------------------------------------
-ID: 9
-Usuario: Juan Erices
-Fecha y hora: 2024-12-24 18:50:08
-Herramientas seleccionadas: Extractor de dos patas
-----------------------------------------------------------------------
-----------------------------------------------------------------------
-ID: 10
-Usuario: Juan Erices
-Fecha y hora: 2024-12-24 18:51:06
-Herramientas seleccionadas: Conjunto manorreductor
-----------------------------------------------------------------------
-----------------------------------------------------------------------
-ID: 11
-Usuario: Juan Erices
-Fecha y hora: 2024-12-24 18:55:48
-Herramientas seleccionadas: Extractor de dos patas
-----------------------------------------------------------------------
-----------------------------------------------------------------------
-ID: 12
-Usuario: Juan Erices
-Fecha y hora: 2024-12-24 19:01:53
-Herramientas seleccionadas: Limpia inyectores diésel
-----------------------------------------------------------------------
-----------------------------------------------------------------------
-ID: 13
-Usuario: Juan Erices
-Fecha y hora: 2024-12-24 19:02:29
-Herramientas seleccionadas: Limpia inyectores diésel
-----------------------------------------------------------------------
-----------------------------------------------------------------------
-ID: 14
-Usuario: Juan Erices
-Fecha y hora: 2024-12-26 19:28:34
-Herramientas seleccionadas: Manómetro
-----------------------------------------------------------------------
-----------------------------------------------------------------------
-ID: 15
-Usuario: Juan Erices
-Fecha y hora: 2024-12-26 19:30:25
-Herramientas seleccionadas: Analizador de vibraciones, Camara termografica, Detector de fallas por ultrasonido, Equipo ultrasonido aerotransportado, Medidor de aislamiento analógico
+Fecha y hora: 2024-12-27 02:35:42
+Herramientas seleccionadas: Medidor de potencia
 ----------------------------------------------------------------------

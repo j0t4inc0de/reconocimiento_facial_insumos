@@ -48,14 +48,14 @@ class VentanaInicio:
             self.frame,
             text="Iniciar",
             command=self.abrir_ventana_camara,
-            font=("Arial", 14, "bold"),  # Tamaño y estilo de la fuente
+            font=("Arial", 14, "bold"),  
             bg="red",                    # Fondo rojo
             fg="white",                  # Texto blanco
             activebackground="#cc0000",  # Fondo rojo más oscuro al presionar
             activeforeground="white",    # Texto blanco al presionar
-            relief="raised",             # Estilo de borde
-            width=20,                    # Ancho del botón
-            height=2                     # Alto del botón
+            relief="raised",             
+            width=20,                    
+            height=2                     
         )
         btn_iniciar.pack(padx=5, pady=5)
 
@@ -148,14 +148,12 @@ class VentanaHerramientas:
         self.tool_window.state("zoomed")
         self.tool_window.iconbitmap(icon_path)
         self.tool_window.configure(bg="#f0f2f5")
-
         print("- - - - - - - - - - - - - - -\nSe abrió la Ventana de Herramientas\n- - - - - - - - - - - - - - - \n")
 
-        # Encabezado con diseño moderno
         header_frame = ttk.Frame(self.tool_window, style="Header.TFrame")
         header_frame.pack(fill="x", pady=(0, 20))
         
-        # Estilo para el encabezado
+        # Estilo de bienbenido
         style = ttk.Style()
         style.configure("Header.TFrame", background="#ffffff")
         style.configure("Header.TLabel", 
@@ -173,39 +171,34 @@ class VentanaHerramientas:
         main_frame = ttk.Frame(self.tool_window, style="Card.TFrame")
         main_frame.pack(fill="both", expand=True, padx=40, pady=(0, 20))
 
-        # Canvas con estilo moderno
         canvas = tk.Canvas(main_frame, bg="#ffffff", highlightthickness=0)
         canvas.pack(side="left", fill="both", expand=True, padx=(0, 20))
 
-        # Scrollbar personalizada con ancho aumentado
+        # Scrollbar
         scrollbar = tk.Scrollbar(
             main_frame,
             orient="vertical",
             command=canvas.yview,
-            width=40  # Ancho aumentado significativamente
+            width=40  # Ancho
         )
         scrollbar.pack(side="right", fill="y")
         
-        # Configurar el canvas
         canvas.configure(yscrollcommand=scrollbar.set)
         self.frame = ttk.Frame(canvas, style="Content.TFrame")
         # Establecer un ancho fijo para el frame interno
         canvas.create_window((0, 0), window=self.frame, anchor="nw", width=700)  # Ancho fijo para el contenido
 
-        # Estilos actualizados
         style.configure("Content.TFrame", background="#ffffff")
         style.configure("Category.TLabel",
                        font=("Segoe UI", 16, "bold"),
                        background="#ffffff",
                        foreground="#E53935")
         
-        # Estilo específico para los checkbuttons con ancho aumentado
         style.configure("Wide.TCheckbutton", 
                        font=("Segoe UI", 12),
                        background="#ffffff",
                        foreground="#333333")
 
-        # Botones modernos
         style.configure("Modern.TButton",
                        font=("Segoe UI", 12, "bold"),
                        padding=(20, 10),
@@ -275,7 +268,6 @@ class VentanaHerramientas:
             'border': 0,
             'cursor': 'hand2'
         }
-
         self.btn_guardar = tk.Button(
             button_frame,
             text="Confirmar préstamo",
@@ -283,7 +275,7 @@ class VentanaHerramientas:
             **button_style
         )
         self.btn_guardar.pack(side="left", padx=10)
-
+        
         btn_cancelar = tk.Button(
             button_frame,
             text="Cancelar",
@@ -367,41 +359,82 @@ class VentanaHerramientas:
         return herramientas_sin_stock
 
     def guardar_seleccion(self):
-        print("- - - - - - - - - - - - - - -\nSe apretó el botón 'Listo'\nPara guardar selección de herramientas\n- - - - - - - - - - - - - - - \n")
+        print("\n=== INICIO DEL PROCESO DE GUARDADO ===")
+        
         herramientas_seleccionadas = [
             herramienta for herramienta, var in self.seleccion_herramientas.items() if var.get()
         ]
-
-        self.btn_guardar["state"] = "disabled"
+        
+        print(f"Herramientas seleccionadas: {herramientas_seleccionadas}")
 
         if not herramientas_seleccionadas:
             mb.showwarning("Advertencia", "No has seleccionado ninguna herramienta.", parent=self.tool_window)
-            self.btn_guardar["state"] = "normal"
             return
 
         herramientas_sin_stock = self.verificar_stock(herramientas_seleccionadas)
         if herramientas_sin_stock:
             mensaje = f"No puedes seleccionar herramientas sin stock:\n{', '.join(herramientas_sin_stock)}"
             mb.showerror("Error", mensaje, parent=self.tool_window)
-            self.btn_guardar["state"] = "normal"
             return
 
-        fecha_hora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        id_ticket = self.generar_id_unico()
-        self.actualizar_existencias(herramientas_seleccionadas)
+        try:
+            # 1. Generar datos básicos
+            fecha_hora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            id_ticket = self.generar_id_unico()
+            herramientas_str = ", ".join(herramientas_seleccionadas)
+            
+            print(f"ID Ticket: {id_ticket}")
+            print(f"Usuario: {self.nombre}")
+            print(f"Fecha y hora: {fecha_hora}")
+            print(f"Herramientas: {herramientas_str}")
 
-        with open("registro_herramientas.txt", "a", encoding="utf-8") as file:
-            file.write("-" * 70 + "\n")
-            file.write(f"ID: {id_ticket}\n")
-            file.write(f"Usuario: {self.nombre}\n")
-            file.write(f"Fecha y hora: {fecha_hora}\n")
-            file.write(f"Herramientas seleccionadas: {', '.join(herramientas_seleccionadas)}\n")
-            file.write("-" * 70 + "\n")
+            # 2. Actualizar existencias
+            print("\nActualizando existencias...")
+            self.actualizar_existencias(herramientas_seleccionadas)
 
-        mb.showinfo("Confirmación", f"Tienes el pedido Nª{id_ticket} \nVolviendo al menú principal.", parent=self.tool_window)
-        print(f"Se guardó correctamente la selección con ID {id_ticket}.")
-        self.tool_window.destroy()
-        self.root.deiconify()
+            # 3. Guardar en archivo de texto
+            print("\nGuardando en archivo de texto...")
+            with open("registro_herramientas.txt", "a", encoding="utf-8") as file:
+                file.write("-" * 70 + "\n")
+                file.write(f"ID: {id_ticket}\n")
+                file.write(f"Usuario: {self.nombre}\n")
+                file.write(f"Fecha y hora: {fecha_hora}\n")
+                file.write(f"Herramientas seleccionadas: {herramientas_str}\n")
+                file.write("-" * 70 + "\n")
+
+            # 4. Guardar en base de datos
+            print("\nGuardando en base de datos...")
+            database_path = "Database/inventario.db"
+            conn = sqlite3.connect(database_path)
+            cursor = conn.cursor()
+            sql = """
+            INSERT INTO pedidos (id, usuario, fechaHora, herramientas) 
+            VALUES (?, ?, ?, ?)
+            """
+            valores = (id_ticket, self.nombre, fecha_hora, herramientas_str)
+            print(f"Con valores a insertar: {valores}")
+            cursor.execute(sql, valores)
+            conn.commit()
+            print("Commit realizado")
+            conn.close()
+            print("Conexión cerrada")
+
+            print("\nProceso completado exitosamente")
+            mb.showinfo("Confirmación", f"Tienes el pedido Nº{id_ticket}\nVolviendo al menú principal.", parent=self.tool_window)
+            self.tool_window.destroy()
+            self.root.deiconify()
+
+        except sqlite3.Error as e:
+            print(f"\nError de SQLite: {e}")
+            print(f"Tipo de error: {type(e)}")
+            mb.showerror("Error", f"Error al guardar en la base de datos: {e}", parent=self.tool_window)
+            
+        except Exception as e:
+            print(f"\nError general: {e}")
+            print(f"Tipo de error: {type(e)}")
+            mb.showerror("Error", f"Error general: {e}", parent=self.tool_window)
+
+        print("\n=== FIN DEL PROCESO DE GUARDADO ===")
 
     def salir_ventana_herramientas(self):
         """Cierra la ventana de herramientas y vuelve a la principal."""
@@ -510,46 +543,6 @@ class VentanaHerramientas:
             mb.showerror("Error", "Hubo un problema al verificar el stock.")
 
         return herramientas_sin_stock
-
-    def guardar_seleccion(self):
-        print("- - - - - - - - - - - - - - -\nSe apretó el botón 'Listo'\nPara guardar selección de herramientas\n- - - - - - - - - - - - - - - \n")
-        herramientas_seleccionadas = [
-            herramienta for herramienta, var in self.seleccion_herramientas.items() if var.get()
-        ]
-
-        # Deshabilitar el botón "Listo" mientras se procesa
-        self.btn_guardar["state"] = "disabled"
-
-        if not herramientas_seleccionadas:
-            # Mostrar el messagebox y vincularlo a la ventana actual
-            mb.showwarning("Advertencia", "No has seleccionado ninguna herramienta.", parent=self.tool_window)
-            self.btn_guardar["state"] = "normal"
-            return
-
-        herramientas_sin_stock = self.verificar_stock(herramientas_seleccionadas)
-        if herramientas_sin_stock:
-            mensaje = f"No puedes seleccionar herramientas sin stock:\n{', '.join(herramientas_sin_stock)}"
-            mb.showerror("Error", mensaje, parent=self.tool_window)
-            self.btn_guardar["state"] = "normal"
-            return
-
-        fecha_hora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        id_ticket = self.generar_id_unico()
-        self.actualizar_existencias(herramientas_seleccionadas)
-
-        with open("registro_herramientas.txt", "a", encoding="utf-8") as file:
-            file.write("-" * 70 + "\n")
-            file.write(f"ID: {id_ticket}\n")
-            file.write(f"Usuario: {self.nombre}\n")
-            file.write(f"Fecha y hora: {fecha_hora}\n")
-            file.write(f"Herramientas seleccionadas: {', '.join(herramientas_seleccionadas)}\n")
-            file.write("-" * 70 + "\n")
-
-        mb.showinfo("Confirmación", f"Tienes el pedido Nª{id_ticket} \nVolviendo al menú principal.", parent=self.tool_window)
-        print(f"Se guardó correctamente la selección con ID {id_ticket}.")
-        self.tool_window.destroy()
-        self.root.deiconify()
-
 
     def salir_ventana_herramientas(self):
         """Cierra la ventana de herramientas y vuelve a la principal."""

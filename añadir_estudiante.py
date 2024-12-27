@@ -33,7 +33,7 @@ class VentanaRegistroEstudiantes:
         self.root = root
         self.root.title("Registro de Estudiantes")
         self.root.geometry("600x400")
-        self.root.configure(bg="white")
+        # self.root.configure(bg="white")
 
         ttk.Label(self.root, text="Registro de Estudiantes", font=("Arial", 18)).pack(pady=10)
 
