@@ -27,7 +27,7 @@ def crear_tabla_pedidos():
 
 crear_tabla_pedidos()
 
-class VentanaHolaMundo(tk.Frame):
+class VentanaInicio(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
 
@@ -79,7 +79,135 @@ class VentanaHolaMundo(tk.Frame):
 class VentanaEscaner(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
-        ttk.Label(self, text="¡Soy la ventana del escáner, para escanear códigos de barra de herramientas!", font=("Arial", 18)).pack(expand=True, pady=50)
+
+        ttk.Label(self, text="Escaneo de Herramientas", font=("Arial", 18)).pack(pady=10)
+
+        # Entrada para el ID del pedido
+        ttk.Label(self, text="Ingresa el ID del pedido:", font=("Arial", 12)).pack(pady=5)
+        self.id_pedido_entry = ttk.Entry(self, font=("Arial", 12))
+        self.id_pedido_entry.pack(pady=5, padx=20, fill="x")
+
+        # Botón para buscar pedido
+        ttk.Button(self, text="Buscar Pedido", command=self.buscar_pedido).pack(pady=10)
+
+        # Lista de herramientas solicitadas
+        self.lista_herramientas_label = ttk.Label(self, text="", font=("Arial", 12), wraplength=800, justify="left")
+        self.lista_herramientas_label.pack(pady=10)
+
+        # Campo para el escaneo de herramientas
+        ttk.Label(self, text="Escanea las herramientas solicitadas:", font=("Arial", 12)).pack(pady=5)
+        self.herramienta_entry = ttk.Entry(self, font=("Arial", 12))
+        self.herramienta_entry.pack(pady=5, padx=20, fill="x")
+        self.herramienta_entry.bind("<Return>", self.registrar_herramienta)  # Detectar cuando se escanea una herramienta
+
+        # Lista de herramientas escaneadas con sus códigos
+        self.herramientas_escaneadas_label = ttk.Label(self, text="", font=("Arial", 12), wraplength=800, justify="left")
+        self.herramientas_escaneadas_label.pack(pady=10)
+
+        # Botón para finalizar pedido
+        self.finalizar_btn = ttk.Button(self, text="Finalizar Pedido", command=self.finalizar_pedido, state="disabled")
+        self.finalizar_btn.pack(pady=10)
+
+        # Mensaje de confirmación
+        self.mensaje_label = ttk.Label(self, text="", font=("Arial", 12), foreground="green")
+        self.mensaje_label.pack(pady=10)
+
+        self.herramientas_solicitadas = []  # Lista de herramientas solicitadas en el pedido
+        self.herramientas_escaneadas = []  # Lista de códigos escaneados (ordenados)
+        self.pedido_id = None  # ID del pedido actual
+
+    def buscar_pedido(self):
+        """Verifica si el pedido existe y obtiene su lista de herramientas."""
+        pedido_id = self.id_pedido_entry.get().strip()
+        if not pedido_id.isdigit():
+            mb.showerror("Error", "El ID del pedido debe ser un número.")
+            return
+
+        try:
+            conn = sqlite3.connect(database_path)
+            cursor = conn.cursor()
+            # Buscar el pedido
+            cursor.execute("SELECT herramientas, estado FROM pedidos WHERE id = ?", (pedido_id,))
+            pedido = cursor.fetchone()
+            conn.close()
+
+            if pedido is None:
+                mb.showerror("Error", f"El pedido con ID {pedido_id} no existe.")
+                return
+
+            herramientas, estado = pedido
+            if estado == "FINALIZADO":
+                mb.showinfo("Pedido Finalizado", f"El pedido con ID {pedido_id} ya está finalizado.")
+                return
+
+            # Mostrar herramientas asociadas al pedido
+            self.herramientas_solicitadas = herramientas.split(",")
+            self.lista_herramientas_label.config(
+                text=f"Herramientas solicitadas: {', '.join(self.herramientas_solicitadas)}\n\n"
+                     f"Escanea cada herramienta en el orden solicitado."
+            )
+            self.herramientas_escaneadas = []
+            self.finalizar_btn.config(state="normal")
+            self.pedido_id = pedido_id  # Guardar ID del pedido para usarlo más tarde
+
+        except sqlite3.Error as e:
+            mb.showerror("Error", f"Ocurrió un error al buscar el pedido: {e}")
+
+    def registrar_herramienta(self, event):
+        """Registra consecutivamente un código de herramienta escaneado."""
+        herramienta_codigo = self.herramienta_entry.get().strip()
+        self.herramienta_entry.delete(0, tk.END)  # Limpiar campo de entrada
+
+        if not herramienta_codigo:
+            return
+
+        # Verificar si hay más herramientas por escanear
+        if len(self.herramientas_escaneadas) >= len(self.herramientas_solicitadas):
+            mb.showwarning("Escaneo Completado", "Ya se han registrado todas las herramientas solicitadas.")
+            return
+
+        # Asociar el código escaneado a la herramienta correspondiente
+        herramienta_actual = self.herramientas_solicitadas[len(self.herramientas_escaneadas)]
+        self.herramientas_escaneadas.append((herramienta_actual, herramienta_codigo))
+
+        # Mostrar mensaje de confirmación
+        mb.showinfo("Herramienta Registrada", f"Herramienta '{herramienta_actual}' asociada con código '{herramienta_codigo}'.")
+
+        # Actualizar la lista de herramientas escaneadas
+        herramientas_escaneadas_texto = "\n".join([f"{herr}: {cod}" for herr, cod in self.herramientas_escaneadas])
+        self.herramientas_escaneadas_label.config(text=f"Herramientas escaneadas:\n{herramientas_escaneadas_texto}")
+
+    def finalizar_pedido(self):
+        """Marca el pedido como finalizado y registra la salida de las herramientas."""
+        if len(self.herramientas_escaneadas) != len(self.herramientas_solicitadas):
+            mb.showerror("Error", "Debes escanear todas las herramientas solicitadas antes de finalizar.")
+            return
+
+        try:
+            conn = sqlite3.connect(database_path)
+            cursor = conn.cursor()
+
+            # Actualizar el estado del pedido a "FINALIZADO"
+            cursor.execute("UPDATE pedidos SET estado = 'FINALIZADO' WHERE id = ?", (self.pedido_id,))
+
+            # Guardar en la tabla historial
+            herramientas_finalizadas = ", ".join([f"{herr}: {cod}" for herr, cod in self.herramientas_escaneadas])
+            cursor.execute(
+                "INSERT INTO historial (pedido_id, herramientas, fechaHora) VALUES (?, ?, datetime('now'))",
+                (self.pedido_id, herramientas_finalizadas)
+            )
+            conn.commit()
+            conn.close()
+
+            # Mostrar mensaje de éxito
+            self.mensaje_label.config(
+                text=f"PEDIDO: N°{self.pedido_id}, HERRAMIENTAS: {herramientas_finalizadas}"
+            )
+            mb.showinfo("Pedido Finalizado", f"PEDIDO: N°{self.pedido_id}, HERRAMIENTAS: {herramientas_finalizadas}")
+            self.finalizar_btn.config(state="disabled")
+
+        except sqlite3.Error as e:
+            mb.showerror("Error", f"Ocurrió un error al finalizar el pedido: {e}")
 
 class VentanaRegistroEstudiantes(tk.Frame):
     def __init__(self, parent):
@@ -166,7 +294,7 @@ class AplicacionPrincipal(tk.Tk):
         self.config(menu=self.menu_bar)
 
         # Añadir opciones al menú principal
-        self.menu_bar.add_command(label="Pedidos", command=self.mostrar_hola_mundo)
+        self.menu_bar.add_command(label="Pedidos", command=self.mostrar_inicio)
         self.menu_bar.add_command(label="Escanear", command=self.mostrar_escaner)
         self.menu_bar.add_command(label="Añadir Estudiante", command=self.mostrar_registro_estudiantes)
 
@@ -178,10 +306,10 @@ class AplicacionPrincipal(tk.Tk):
         self.ventanas = {}
 
         # Cargar la ventana inicial
-        self.mostrar_hola_mundo()
+        self.mostrar_inicio()
 
-    def mostrar_hola_mundo(self):
-        self.cambiar_ventana(VentanaHolaMundo)
+    def mostrar_inicio(self):
+        self.cambiar_ventana(VentanaInicio)
         
     def mostrar_escaner(self):
         self.cambiar_ventana(VentanaEscaner)
