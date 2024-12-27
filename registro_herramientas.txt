@@ -38,3 +38,15 @@ Usuario: Juan Erices
 Fecha y hora: 2024-12-27 02:35:42
 Herramientas seleccionadas: Medidor de potencia
 ----------------------------------------------------------------------
+----------------------------------------------------------------------
+ID: 7
+Usuario: Juan Erices
+Fecha y hora: 2024-12-27 02:38:31
+Herramientas seleccionadas: Kit de montaje de rodamientos en frío
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+ID: 8
+Usuario: Juan Erices
+Fecha y hora: 2024-12-27 02:39:08
+Herramientas seleccionadas: Detector de fallas por ultrasonido, Medidor de aislamiento analógico, Variador de frecuencia, Wattmetro trifásico analógico
+----------------------------------------------------------------------
