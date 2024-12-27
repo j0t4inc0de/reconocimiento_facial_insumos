@@ -1,27 +1,4 @@
 Historial de Herramientas - INACAP
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
-----------------------------------------------------------------------
-ID: 1
-Usuario: Juan Erices
-Fecha y hora: 2024-12-27 02:57:26
-Herramientas seleccionadas: Valvula electromecánica, Variador de frecuencia, Wattmetro trifásico analógico
-----------------------------------------------------------------------
-----------------------------------------------------------------------
-ID: 2
-Usuario: Juan Erices
-Fecha y hora: 2024-12-27 03:01:50
-Herramientas seleccionadas: Valvula electromecánica
-----------------------------------------------------------------------
-----------------------------------------------------------------------
-ID: 3
-Usuario: Juan Erices
-Fecha y hora: 2024-12-27 03:02:11
-Herramientas seleccionadas: Variador de frecuencia
-----------------------------------------------------------------------
-----------------------------------------------------------------------
-ID: 4
-Usuario: Juan Erices
-Fecha y hora: 2024-12-27 03:02:29
-Herramientas seleccionadas: Valvula electromecánica, Variador de frecuencia, Wattmetro trifásico analógico
-----------------------------------------------------------------------
+
