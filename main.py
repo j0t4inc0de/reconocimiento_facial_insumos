@@ -388,11 +388,9 @@ class VentanaHerramientas:
             print(f"Fecha y hora: {fecha_hora}")
             print(f"Herramientas: {herramientas_str}")
 
-            # 2. Actualizar existencias
             print("\nActualizando existencias...")
             self.actualizar_existencias(herramientas_seleccionadas)
 
-            # 3. Guardar en archivo de texto
             print("\nGuardando en archivo de texto...")
             with open("registro_herramientas.txt", "a", encoding="utf-8") as file:
                 file.write("-" * 70 + "\n")
@@ -402,7 +400,7 @@ class VentanaHerramientas:
                 file.write(f"Herramientas seleccionadas: {herramientas_str}\n")
                 file.write("-" * 70 + "\n")
 
-            # 4. Guardar en base de datos
+            #   Guardar en base de datos
             print("\nGuardando en base de datos...")
             database_path = "Database/inventario.db"
             conn = sqlite3.connect(database_path)
