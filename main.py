@@ -403,13 +403,14 @@ class VentanaHerramientas:
             #   Guardar en base de datos
             print("\nGuardando en base de datos...")
             database_path = "Database/inventario.db"
+            inicio_estado = "PENDIENTE"
             conn = sqlite3.connect(database_path)
             cursor = conn.cursor()
             sql = """
-            INSERT INTO pedidos (id, usuario, fechaHora, herramientas) 
-            VALUES (?, ?, ?, ?)
+            INSERT INTO pedidos (id, usuario, fechaHora, herramientas, estado) 
+            VALUES (?, ?, ?, ?, ?)
             """
-            valores = (id_ticket, self.nombre, fecha_hora, herramientas_str)
+            valores = (id_ticket, self.nombre, fecha_hora, herramientas_str, inicio_estado)
             print(f"Con valores a insertar: {valores}")
             cursor.execute(sql, valores)
             conn.commit()

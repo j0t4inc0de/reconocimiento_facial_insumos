@@ -1,38 +1,81 @@
 import sqlite3
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox as mb
-from PIL import Image, ImageTk
 import os
-import shutil
 
 # Ruta de la base de datos y directorio de imágenes
 database_path = "Database/inventario.db"
 dataset_dir = "Dataset"
 
-# Crear tabla de estudiantes si no existe
-def crear_tabla_estudiantes():
+# Crear tabla de pedidos si no existe
+def crear_tabla_pedidos():
     try:
         conn = sqlite3.connect(database_path)
         cursor = conn.cursor()
         cursor.execute('''
-            CREATE TABLE IF NOT EXISTS estudiantes (
-                rut TEXT INTEGER PRIMARY KEY,
-                nombre TEXT NOT NULL,
-                dataset_dir TEXT NOT NULL
+            CREATE TABLE IF NOT EXISTS pedidos (
+                id INTEGER PRIMARY KEY,
+                usuario TEXT,
+                fechaHora TEXT,
+                herramientas TEXT
             )
         ''')
         conn.commit()
         conn.close()
     except sqlite3.Error as e:
-        print("Error al crear la tabla estudiantes:", e)
+        print("Error al crear la tabla pedidos:", e)
 
-crear_tabla_estudiantes()
+crear_tabla_pedidos()
 
 class VentanaHolaMundo(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
-        ttk.Label(self, text="¡Hola Mundo!", font=("Arial", 24)).pack(expand=True, pady=50)
+
+        # Título de la ventana
+        ttk.Label(self, text="Lista de Pedidos", font=("Arial", 18)).pack(pady=10)
+
+        # Crear el Treeview
+        columnas = ("id", "usuario", "fechaHora", "herramientas", "estado")
+        self.tree = ttk.Treeview(self, columns=columnas, show="headings")
         
+        # Configurar encabezados
+        self.tree.heading("id", text="ID")
+        self.tree.heading("usuario", text="Usuario")
+        self.tree.heading("fechaHora", text="Fecha y Hora")
+        self.tree.heading("herramientas", text="Herramientas")
+        self.tree.heading("estado", text="Herramientas")
+
+        # Configurar tamaños de las columnas
+        self.tree.column("id", width=15, anchor="center")
+        self.tree.column("usuario", width=90, anchor="center")
+        self.tree.column("fechaHora", width=100, anchor="center")
+        self.tree.column("herramientas", width=450, anchor="center")
+        self.tree.column("estado", width=100, anchor="center")
+
+        # Empaquetar el Treeview
+        self.tree.pack(fill="both", expand=True, padx=10, pady=10)
+
+        # Cargar los datos desde la base de datos
+        self.cargar_pedidos()
+
+    def cargar_pedidos(self):
+        """Carga los datos de la tabla 'pedidos' en el Treeview."""
+        try:
+            conn = sqlite3.connect(database_path)
+            cursor = conn.cursor()
+
+            # Obtener todos los registros de la tabla pedidos
+            cursor.execute("SELECT * FROM pedidos")
+            registros = cursor.fetchall()
+            conn.close()
+
+            # Insertar los registros en el Treeview
+            for registro in registros:
+                self.tree.insert("", "end", values=registro)
+
+        except sqlite3.Error as e:
+            mb.showerror("Error", f"Ocurrió un error al cargar los pedidos: {e}")
+
 class VentanaEscaner(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
@@ -90,10 +133,6 @@ class VentanaRegistroEstudiantes(tk.Frame):
         if not os.path.exists(estudiante_dir):
             os.makedirs(estudiante_dir)
 
-        # Copiar imágenes seleccionadas al directorio del estudiante
-        for imagen in self.imagenes_seleccionadas:
-            shutil.copy(imagen, estudiante_dir)
-
         # Guardar datos en la base de datos
         try:
             conn = sqlite3.connect(database_path)
@@ -120,14 +159,14 @@ class AplicacionPrincipal(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Aplicación Principal")
-        self.geometry("800x600")
+        self.geometry("1080x720")
 
         # Crear el menú principal
         self.menu_bar = tk.Menu(self)
         self.config(menu=self.menu_bar)
 
         # Añadir opciones al menú principal
-        self.menu_bar.add_command(label="Hola Mundo", command=self.mostrar_hola_mundo)
+        self.menu_bar.add_command(label="Pedidos", command=self.mostrar_hola_mundo)
         self.menu_bar.add_command(label="Escanear", command=self.mostrar_escaner)
         self.menu_bar.add_command(label="Añadir Estudiante", command=self.mostrar_registro_estudiantes)
 
