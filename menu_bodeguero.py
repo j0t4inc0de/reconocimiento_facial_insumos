@@ -140,19 +140,27 @@ class VentanaEscaner(tk.Frame):
 
     def solicitar_contrasena(self):
         """Solicita una contraseña antes de permitir el acceso a la ventana."""
-        def validar_contrasena():
+        # Bandera para evitar que el mensaje de error se muestre varias veces
+        self.mostrando_error = False
+
+        def validar_contrasena(event=None):  # Permitir que funcione tanto con un clic como con ENTER
             contrasena = contrasena_entry.get()
             if contrasena == "2003":  # Contraseña esperada
                 modal.destroy()  # Cerrar la ventana modal
             else:
-                mb.showerror("Error", "Contraseña incorrecta.")
+                if not self.mostrando_error:
+                    self.mostrando_error = True  # Marcar que se está mostrando el error
+                    mb.showerror("Error", "Contraseña incorrecta.")
+                    self.mostrando_error = False  # Resetear la bandera después de cerrarlo
                 # Limpiar el campo de contraseña para intentarlo de nuevo
                 contrasena_entry.delete(0, tk.END)
 
         def cerrar_modal():
-            # Reabrir la ventana modal si se intenta cerrar sin ingresar la contraseña correcta
-            mb.showwarning("Advertencia", "Debe ingresar la contraseña para continuar.")
-            return  # Evitar que se cierre la ventana
+            # Usamos una bandera para evitar cuadros de diálogo duplicados
+            if not hasattr(cerrar_modal, "ya_mostrado"):
+                cerrar_modal.ya_mostrado = True  # Marcar que ya se mostró el cuadro de advertencia
+                mb.showwarning("Advertencia", "Debe ingresar la contraseña para continuar.")
+                cerrar_modal.ya_mostrado = False  # Resetear la bandera después de cerrarlo
 
         # Crear una ventana modal
         modal = tk.Toplevel(self)
@@ -165,6 +173,9 @@ class VentanaEscaner(tk.Frame):
         contrasena_entry = ttk.Entry(modal, font=("Arial", 12), show="*")
         contrasena_entry.pack(pady=5, padx=20, fill="x")
 
+        # Vincular la tecla ENTER al botón "Aceptar"
+        contrasena_entry.bind("<Return>", validar_contrasena)
+
         ttk.Button(modal, text="Aceptar", command=validar_contrasena).pack(pady=10)
 
         # Deshabilitar el cierre directo de la ventana modal
@@ -172,7 +183,6 @@ class VentanaEscaner(tk.Frame):
 
         # Pausar la ejecución de la ventana principal hasta que la modal sea cerrada correctamente
         self.wait_window(modal)
-
 
     def buscar_pedido(self):
         """Verifica si el pedido existe y obtiene su lista de herramientas."""
