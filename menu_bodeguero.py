@@ -8,8 +8,10 @@ import shutil
 
 # database_path = "C:/Users/FabLab1/Desktop/Sistema Panol - 7/Database/inventario.db"
 # dataset_dir = "C:/Users/FabLab1/Desktop/Sistema Panol - 7/Dataset"
-database_path = "Database/inventario.db"
-dataset_dir = "Dataset"
+# database_path = "Database/inventario.db"
+# dataset_dir = "Dataset"
+database_path = "E:/OneDrive/OneDrive - INACAP/Desktop/Ficheros Panol/reconocimiento_facial_insumos-4/Database/inventario.db"
+dataset_dir = "E:/OneDrive/OneDrive - INACAP/Desktop/Ficheros Panol/reconocimiento_facial_insumos-4/Dataset"
 
 icon_path = "icono.ico"
 class VentanaInicio(tk.Frame):
