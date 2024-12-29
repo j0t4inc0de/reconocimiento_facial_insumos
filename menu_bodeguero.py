@@ -98,6 +98,10 @@ class VentanaEscaner(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
 
+        # Solicitar contraseña al abrir la ventana
+        self.solicitar_contrasena()
+
+        # Contenido de la ventana
         ttk.Label(self, text="Escaneo de Herramientas", font=("Arial", 18)).pack(pady=10)
 
         # Entrada para el ID del pedido
@@ -133,6 +137,42 @@ class VentanaEscaner(tk.Frame):
         self.herramientas_solicitadas = []  # Lista de herramientas solicitadas en el pedido
         self.herramientas_escaneadas = []  # Lista de códigos escaneados (ordenados)
         self.pedido_id = None  # ID del pedido actual
+
+    def solicitar_contrasena(self):
+        """Solicita una contraseña antes de permitir el acceso a la ventana."""
+        def validar_contrasena():
+            contrasena = contrasena_entry.get()
+            if contrasena == "2003":  # Contraseña esperada
+                modal.destroy()  # Cerrar la ventana modal
+            else:
+                mb.showerror("Error", "Contraseña incorrecta.")
+                # Limpiar el campo de contraseña para intentarlo de nuevo
+                contrasena_entry.delete(0, tk.END)
+
+        def cerrar_modal():
+            # Reabrir la ventana modal si se intenta cerrar sin ingresar la contraseña correcta
+            mb.showwarning("Advertencia", "Debe ingresar la contraseña para continuar.")
+            return  # Evitar que se cierre la ventana
+
+        # Crear una ventana modal
+        modal = tk.Toplevel(self)
+        modal.title("Autenticación")
+        modal.geometry("300x150")
+        modal.transient(self)  # Mantener la ventana sobre su ventana principal
+        modal.grab_set()  # Bloquear interacción con la ventana principal
+
+        ttk.Label(modal, text="Ingrese la contraseña (4 dígitos):", font=("Arial", 12)).pack(pady=10)
+        contrasena_entry = ttk.Entry(modal, font=("Arial", 12), show="*")
+        contrasena_entry.pack(pady=5, padx=20, fill="x")
+
+        ttk.Button(modal, text="Aceptar", command=validar_contrasena).pack(pady=10)
+
+        # Deshabilitar el cierre directo de la ventana modal
+        modal.protocol("WM_DELETE_WINDOW", cerrar_modal)
+
+        # Pausar la ejecución de la ventana principal hasta que la modal sea cerrada correctamente
+        self.wait_window(modal)
+
 
     def buscar_pedido(self):
         """Verifica si el pedido existe y obtiene su lista de herramientas."""
