@@ -111,7 +111,8 @@ class VentanaEscaner(tk.Frame):
 
         # Botón para buscar pedido
         ttk.Button(self, text="Buscar Pedido", command=self.buscar_pedido).pack(pady=10)
-
+        self.id_pedido_entry.bind("<Return>", lambda event: self.buscar_pedido())
+        
         # Lista de herramientas solicitadas
         self.lista_herramientas_label = ttk.Label(self, text="", font=("Arial", 12), wraplength=800, justify="left")
         self.lista_herramientas_label.pack(pady=10)
