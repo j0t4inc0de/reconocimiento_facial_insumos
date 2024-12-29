@@ -1,3 +1,5 @@
+import os
+
 import sqlite3
 import tkinter as tk
 from tkinter import ttk
@@ -5,7 +7,6 @@ from tkinter import messagebox as mb
 from ttkthemes import ThemedTk
 import cv2
 import face_recognition
-import os
 from datetime import datetime # type: ignore
 from PIL import Image, ImageTk
 import pandas as pd  # Nueva importación para manejar Excel tambien el modulo openpyxl
@@ -145,6 +146,7 @@ class VentanaHerramientas:
         self.tool_window = tk.Toplevel(self.root)
         self.tool_window.title("Sistema de Préstamo")
         self.tool_window.geometry("1920x1080")
+        self.tool_window.attributes('-fullscreen', True)
         self.tool_window.state("zoomed")
         self.tool_window.iconbitmap(icon_path)
         self.tool_window.configure(bg="#f0f2f5")
@@ -483,9 +485,6 @@ class VentanaHerramientas:
             file.write(str(nuevo_id))
         
         return nuevo_id
-
-    # El resto de los métodos permanecen igual
-
     def obtener_herramientas_por_categoria(self, db_path):
         """Consulta la base de datos SQLite y devuelve un diccionario con categorías y herramientas."""
         herramientas_por_categoria = {}
@@ -517,12 +516,10 @@ class VentanaHerramientas:
             print("Error al conectar a la base de datos:", e)
 
         return herramientas_por_categoria
-    
     def verificar_stock(self, herramientas_seleccionadas):
         """Verifica si las herramientas seleccionadas tienen stock disponible."""
         db_path = database_path
         herramientas_sin_stock = []
-
         try:
             # Conexión a la base de datos
             conn = sqlite3.connect(db_path)
@@ -579,7 +576,6 @@ class VentanaHerramientas:
         except sqlite3.Error as e:
             print("Error al actualizar la base de datos:", e)
             mb.showerror("Error", "Hubo un problema al actualizar las existencias.")
-
         
     def generar_id_unico(self):
         # Ruta del archivo para almacenar el último ID

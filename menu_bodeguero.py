@@ -2,30 +2,40 @@ import sqlite3
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox as mb
 import os
+import shutil
 
 # Ruta de la base de datos y directorio de imágenes
+
+# database_path = "C:/Users/FabLab1/Desktop/Sistema Panol - 7/Database/inventario.db"
+# dataset_dir = "C:/Users/FabLab1/Desktop/Sistema Panol - 7/Dataset"
 database_path = "Database/inventario.db"
 dataset_dir = "Dataset"
 
+icon_path = "icono.ico"
 class VentanaInicio(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
 
         ttk.Label(self, text="Lista de Pedidos", font=("Arial", 18)).pack(pady=10)
 
+        # Style letras mas grande
+        style = ttk.Style()
+        style.configure('Treeview', font=('Arial', 11))
+        style.configure('Treeview.Heading', font=('Arial', 12))
+
         columnas = ("id", "usuario", "fechaHora", "herramientas", "estado")
-        self.tree = ttk.Treeview(self, columns=columnas, show="headings")
-        
-        self.tree.heading("id", text="ID")
+        self.tree = ttk.Treeview(self, columns=columnas, show="headings", style='Treeview')
+        self.tree.heading("id", text="N° Pedido")
         self.tree.heading("usuario", text="Usuario")
         self.tree.heading("fechaHora", text="Fecha y Hora")
         self.tree.heading("herramientas", text="Herramientas")
-        self.tree.heading("estado", text="Herramientas")
-        self.tree.column("id", width=15, anchor="center")
+        self.tree.heading("estado", text="Estado")
+
+        self.tree.column("id", width=2, anchor="center")
         self.tree.column("usuario", width=90, anchor="center")
-        self.tree.column("fechaHora", width=100, anchor="center")
-        self.tree.column("herramientas", width=450, anchor="center")
-        self.tree.column("estado", width=100, anchor="center")
+        self.tree.column("fechaHora", width=110, anchor="center")
+        self.tree.column("herramientas", width=500, anchor="center")
+        self.tree.column("estado", width=90, anchor="center")
 
         self.tree.pack(fill="both", expand=True, padx=10, pady=10)
 
@@ -52,15 +62,13 @@ class VentanaHistorial(tk.Frame):
 
         ttk.Label(self, text="Historial", font=("Arial", 18)).pack(pady=10)
 
-        columnas = ("id", "N° Pedido", "herramientas", "fechaHora")
+        columnas = ("N° Pedido", "herramientas", "fechaHora")
         self.tree = ttk.Treeview(self, columns=columnas, show="headings")
         
-        self.tree.heading("id", text="ID")
         self.tree.heading("N° Pedido", text="N° Pedido")
         self.tree.heading("fechaHora", text="Fecha y Hora")
         self.tree.heading("herramientas", text="Herramientas")
         self.tree.heading("fechaHora", text="fechaHora")
-        self.tree.column("id", width=10, anchor="center")
         self.tree.column("N° Pedido", width=20, anchor="center")
         self.tree.column("herramientas", width=550, anchor="center")
         self.tree.column("fechaHora", width=50, anchor="center")
@@ -75,7 +83,7 @@ class VentanaHistorial(tk.Frame):
             conn = sqlite3.connect(database_path)
             cursor = conn.cursor()
 
-            cursor.execute("SELECT * FROM historial")
+            cursor.execute("SELECT pedido_id, herramientas, fechaHora FROM historial")
             registros = cursor.fetchall()
             conn.close()
             for registro in registros:
@@ -269,6 +277,16 @@ class VentanaRegistroEstudiantes(tk.Frame):
         if not os.path.exists(estudiante_dir):
             os.makedirs(estudiante_dir)
 
+        # Copiar imágenes seleccionadas a la carpeta del estudiante
+        try:
+            for imagen in self.imagenes_seleccionadas:
+                nombre_archivo = os.path.basename(imagen)  # Obtener el nombre del archivo
+                destino = os.path.join(estudiante_dir, nombre_archivo)  # Ruta destino en la carpeta del estudiante
+                shutil.copy2(imagen, destino)  # Copiar la imagen al destino
+        except Exception as e:
+            mb.showerror("Error", f"Ocurrió un error al copiar las imágenes: {e}")
+            return
+
         # Guardar datos en la base de datos
         try:
             conn = sqlite3.connect(database_path)
@@ -280,7 +298,7 @@ class VentanaRegistroEstudiantes(tk.Frame):
             conn.commit()
             conn.close()
 
-            mb.showinfo("Éxito", "Estudiante registrado correctamente.")
+            mb.showinfo("Éxito", "Estudiante registrado correctamente con sus imágenes.")
 
             # Limpiar campos
             self.rut_entry.delete(0, tk.END)
@@ -296,7 +314,6 @@ class AplicacionPrincipal(tk.Tk):
         super().__init__()
         self.title("Aplicación Principal")
         self.geometry("1080x720")
-
         # Crear el menú principal
         self.menu_bar = tk.Menu(self)
         self.config(menu=self.menu_bar)
