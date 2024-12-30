@@ -33,9 +33,9 @@ class VentanaInicio(tk.Frame):
         self.tree.heading("herramientas", text="Herramientas")
         self.tree.heading("estado", text="Estado")
 
-        self.tree.column("id", width=2, anchor="center")
-        self.tree.column("usuario", width=90, anchor="center")
-        self.tree.column("fechaHora", width=110, anchor="center")
+        self.tree.column("id", width=30, anchor="center")
+        self.tree.column("usuario", width=85, anchor="center")
+        self.tree.column("fechaHora", width=100, anchor="center")
         self.tree.column("herramientas", width=500, anchor="center")
         self.tree.column("estado", width=90, anchor="center")
 
@@ -50,6 +50,46 @@ class VentanaInicio(tk.Frame):
             conn = sqlite3.connect(database_path)
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM pedidos")
+            registros = cursor.fetchall()
+            conn.close()
+            for registro in registros:
+                self.tree.insert("", "end", values=registro)
+
+        except sqlite3.Error as e:
+            mb.showerror("Error", f"Ocurrió un error al cargar los pedidos: {e}")
+            
+class VentanaInventario(tk.Frame):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        ttk.Label(self, text="Inventario", font=("Arial", 18)).pack(pady=10)
+
+        # Style letras mas grande
+        style = ttk.Style()
+        style.configure('Treeview', font=('Arial', 11))
+        style.configure('Treeview.Heading', font=('Arial', 13))
+
+        columnas = ("categoria", "herramienta", "existencia")
+        self.tree = ttk.Treeview(self, columns=columnas, show="headings", style='Treeview')
+        self.tree.heading("categoria", text="Categoria")
+        self.tree.heading("herramienta", text="Herramienta")
+        self.tree.heading("existencia", text="Existencia")
+
+        self.tree.column("categoria", width=2, anchor="center")
+        self.tree.column("herramienta", width=90, anchor="center")
+        self.tree.column("existencia", width=110, anchor="center")
+
+        self.tree.pack(fill="both", expand=True, padx=10, pady=10)
+
+        # Cargar los datos desde la base de datos
+        self.cargar_pedidos()
+
+    def cargar_pedidos(self):
+        """Carga los datos de la tabla 'pedidos' en el Treeview."""
+        try:
+            conn = sqlite3.connect(database_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT categoria, herramienta, existencia FROM herramientas")
             registros = cursor.fetchall()
             conn.close()
             for registro in registros:
@@ -376,6 +416,7 @@ class AplicacionPrincipal(tk.Tk):
         self.menu_bar.add_command(label="Escanear", command=self.mostrar_escaner)
         self.menu_bar.add_command(label="Historial", command=self.mostrar_historial)
         self.menu_bar.add_command(label="Añadir Estudiante", command=self.mostrar_registro_estudiantes)
+        self.menu_bar.add_command(label="Inventario", command=self.mostrar_inventario)
 
         # Contenedor para cambiar entre frames
         self.contenedor = tk.Frame(self)
@@ -389,6 +430,9 @@ class AplicacionPrincipal(tk.Tk):
 
     def mostrar_inicio(self):
         self.cambiar_ventana(VentanaInicio)
+        
+    def mostrar_inventario(self):
+        self.cambiar_ventana(VentanaInventario)
         
     def mostrar_escaner(self):
         self.cambiar_ventana(VentanaEscaner)
