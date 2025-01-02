@@ -197,7 +197,7 @@ class VentanaHerramientas:
                        foreground="#E53935")
         
         style.configure("Wide.TCheckbutton", 
-                       font=("Segoe UI", 12),
+                       font=("Segoe UI", 14),
                        background="#ffffff",
                        foreground="#333333")
 
@@ -404,7 +404,6 @@ class VentanaHerramientas:
 
             #   Guardar en base de datos
             print("\nGuardando en base de datos...")
-            database_path = "Database/inventario.db"
             inicio_estado = "PENDIENTE"
             conn = sqlite3.connect(database_path)
             cursor = conn.cursor()

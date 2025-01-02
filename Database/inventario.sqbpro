@@ -1,6 +1,70 @@
-<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="E:\OneDrive\OneDrive - INACAP\Desktop\Ficheros Panol\reconocimiento_facial_insumos-4\Database\inventario.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="0"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="1186"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="2" parent="0"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,11:mainestudiantes"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="SQL 1">CREATE TABLE IF NOT EXISTS historial (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                pedido_id INTEGER,
-                herramientas TEXT,
-                fechaHora TEXT
-            )</sql><current_tab id="0"/></tab_sql></sqlb_project>
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="E:\OneDrive\OneDrive - INACAP\Desktop\Ficheros Panol\reconocimiento_facial_insumos-4\Database\inventario.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="1"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="1186"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,12:mainherramientas"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="estudiantes" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="75"/><column index="2" value="71"/><column index="3" value="119"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="herramientas" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="40"/><column index="2" value="370"/><column index="3" value="237"/><column index="4" value="73"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">-- Script para insertar herramientas en la tabla 'herramientas'
+-- Asegúrate de que la tabla herramientas tiene las columnas:
+-- 'id' (opcional, si es autoincremental), 'herramienta', 'categoria', 'existencia'
+
+INSERT INTO herramientas (herramienta, categoria, existencia) VALUES
+-- Categoría: Análisis
+('analizador de particulas', 'Analisis', 0),
+('analizador de vibraciones', 'Analisis', 0),
+('camara termografica', 'Analisis', 1),
+('detector de fallas por ultrasonido', 'Analisis', 2),
+('equipo medidor de espesores', 'Analisis', 0),
+('equipo ultrasonido aerotransportado', 'Analisis', 1),
+('medidor de aislamiento analógico', 'Analisis', 1),
+('medidor de luminosidad', 'Analisis', 0),
+('medidor de potencia', 'Analisis', 2),
+('medidor de vibraciones', 'Analisis', 1),
+('micrómetro exterior 2-3&quot; .001&quot; (pulg)', 'Analisis', 2),
+('micrómetro exterior 3/4&quot; .001&quot; (pulg)', 'Analisis', 3),
+('micrómetro interior 5-30mm 0.01mm', 'Analisis', 3),
+('micrómetro interior 50-75mm 0.01mm', 'Analisis', 2),
+('micrómetro interior 75-100mm 0.01mm', 'Analisis', 3),
+('multímetro digital', 'Analisis', 1),
+('pie de metro 0.05mm, 200mm', 'Analisis', 5),
+('multímetro digital', 'Analisis', 1),
+
+-- Categoría: Electricidad y Control
+('valvula electromecánica', 'Electricidad y Control', 0),
+('variador de frecuencia', 'Electricidad y Control', 0),
+('variador de frecuencia monofásico', 'Electricidad y Control', 6),
+('wattmetro trifásico analógico', 'Electricidad y Control', 3),
+
+-- Categoría: Mecánica
+('pie de metro 0.05mm, 200mm', 'Mecanica', 5),
+('pie de metro digital 150mm', 'Mecanica', 6),
+('scaner', 'Mecanica', 0),
+('sistema laser analizador', 'Mecanica', 1),
+('tester de presión quadrigauge', 'Mecanica', 3),
+('tester digital aislamiento', 'Mecanica', 4),
+('trazador de altura', 'Mecanica', 5),
+('caja de machos y terrajas 1/4 - 1&quot; bsw', 'Mecanica', 6),
+('caja de machos y terrajas 1/4 - 1&quot; unf', 'Mecanica', 4),
+('compresor de resortes', 'Mecanica', 6),
+('conjunto manorreductor', 'Mecanica', 3),
+('extractor', 'Mecanica', 0),
+('extractor de dos patas', 'Mecanica', 0),
+('extractor de impacto', 'Mecanica', 3),
+('extractor de rodamiento transmisión', 'Mecanica', 4),
+('extractor para tambor de freno', 'Mecanica', 2),
+('herramientas puesta a punto', 'Mecanica', 2),
+('kit compresión diesel', 'Mecanica', 2),
+('kit de montaje de rodamientos en frío', 'Mecanica', 1),
+('limpia inyectores diésel', 'Mecanica', 1),
+('m.profundidad 0-300mm 0.01mm', 'Mecanica', 1),
+('manómetro', 'Mecanica', 1),
+('manómetro de entrada', 'Mecanica', 3),
+('manómetro hidráulico de 0 a 40', 'Mecanica', 2),
+('medidor de tanque', 'Mecanica', 1),
+('medidor presión de combustible', 'Mecanica', 1),
+('micrómetro 0-25mm 0.01mm', 'Mecanica', 2),
+('micrómetro 25-50mm 0.01mm', 'Mecanica', 3),
+('set de lainas', 'Mecanica', 4),
+('set de manómetros toma de presión', 'Mecanica', 3),
+('yoke magnético', 'Mecanica', 2),
+
+-- Categoría: Otros
+('simulador de sensores digital', 'Otros', 1),
+('regleta conexión 4mm negro', 'Otros', 2),
+('variador de frecuencia monofásico', 'Otros', 6),
+('sierra electrica', 'Otros', 2);
+</sql><current_tab id="0"/></tab_sql></sqlb_project>
