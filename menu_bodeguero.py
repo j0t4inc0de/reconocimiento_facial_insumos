@@ -418,19 +418,73 @@ class VentanaStock(tk.Toplevel):
 class VentanaBuscar(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
-        self.title("Buscar Herramienta")
-        self.geometry("300x150")
+        self.title("Buscar herramienta")
+        self.geometry("300x300")
         self.crear_formulario()
 
     def crear_formulario(self):
-        self.entry_buscar = PlaceholderEntry(self, "Ingrese el nombre de la herramienta")
-        self.entry_buscar.pack(pady=5)
+        ttk.Label(self, text="Seleccione la categoría:").pack(pady=5)
+        self.combobox_categoria = ttk.Combobox(self, state="readonly")
+        self.combobox_categoria.pack(pady=5)
+        self.combobox_categoria.bind("<<ComboboxSelected>>", self.actualizar_herramientas)
 
-        ttk.Button(self, text="Buscar", command=self.buscar_herramienta).pack(pady=10)
+        ttk.Label(self, text="Seleccione la herramienta:").pack(pady=5)
+        self.combobox_herramienta = ttk.Combobox(self, state="readonly")
+        self.combobox_herramienta.pack(pady=5)
+        self.combobox_herramienta.bind("<<ComboboxSelected>>", self.cargar_datos_herramienta)
 
-    def buscar_herramienta(self):
-        print("Herramienta buscada.")
-        self.destroy()
+        ttk.Label(self, text="Información de la herramienta:").pack(pady=5)
+
+        ttk.Label(self, text="Disponibles:").pack(pady=0)
+        self.entry_stock = ttk.Entry(self, width=35)
+        self.entry_stock.pack(pady=5)
+
+        ttk.Label(self, text="Categoría:").pack(pady=0)
+        self.entry_categoria = ttk.Entry(self, width=35)
+        self.entry_categoria.pack(pady=5)
+
+        self.cargar_categorias()
+
+    def cargar_categorias(self):
+        try:
+            conn = sqlite3.connect(database_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT DISTINCT categoria FROM herramientas")
+            categorias = [fila[0] for fila in cursor.fetchall()]
+            conn.close()
+            self.combobox_categoria["values"] = categorias
+        except sqlite3.Error as e:
+            mb.showerror("Error", f"No se pudieron cargar las categorías: {e}")
+
+    def actualizar_herramientas(self, event):
+        categoria_seleccionada = self.combobox_categoria.get()
+        try:
+            conn = sqlite3.connect(database_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT herramienta FROM herramientas WHERE categoria = ?", (categoria_seleccionada,))
+            herramientas = [fila[0] for fila in cursor.fetchall()]
+            conn.close()
+            self.combobox_herramienta["values"] = herramientas
+        except sqlite3.Error as e:
+            mb.showerror("Error", f"No se pudieron cargar las herramientas: {e}")
+
+    def cargar_datos_herramienta(self, event):
+        herramienta_seleccionada = self.combobox_herramienta.get()
+        try:
+            conn = sqlite3.connect(database_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT categoria, existencia FROM herramientas WHERE herramienta = ?", (herramienta_seleccionada,))
+            datos = cursor.fetchone()
+            conn.close()
+            if datos:
+                categoria_actual, stock_actual = datos
+                self.entry_categoria.delete(0, tk.END)
+                self.entry_categoria.insert(0, categoria_actual)
+                self.entry_stock.delete(0, tk.END)
+                self.entry_stock.insert(0, str(stock_actual))
+        except sqlite3.Error as e:
+            mb.showerror("Error", f"No se pudieron cargar los datos de la herramienta: {e}")
+
 
 class PlaceholderEntry(ttk.Entry):
     """Un Entry con soporte para placeholder."""
