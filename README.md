@@ -1,6 +1,9 @@
 Sistema de Reconocimiento Facial enfocado en la gestión de herramientas y recursos en un entorno institucional. Este sistema permite identificar usuarios mediante reconocimiento facial y registrar las herramientas seleccionadas por cada individuo manteniendo y creando un historial de cada estudiante
+
 Vista estudiante: Al darle iniciar se reconoce su rostro, y crea su pedido de herramientas para que el bodeguero pueda acceder a ella y escanear las herramientas elegidas
+
 Vista bodeguero: Ver todos los pedidos echos por estudiantes, CRUD de herramientas, ESCANEAR herramientas de los PEDIDOS, Añadir estudiantes al RECONOCIMIENTO FACIAL. El escaner cuenta con contraseña
+
 
 Diagrama de flujo del TOTEM (Estudiante):
 ![Diagrama de flujo del totem - VISTA ESTUDIANTE](https://github.com/user-attachments/assets/fed36767-ed4b-40ad-b5c2-b4c94c45f410)
