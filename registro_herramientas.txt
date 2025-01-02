@@ -56,3 +56,9 @@ Usuario: Juan Erices
 Fecha y hora: 2025-01-01 21:03:39
 Herramientas seleccionadas: variador de frecuencia monofásico
 ----------------------------------------------------------------------
+----------------------------------------------------------------------
+ID: 10
+Usuario: Juan Erices
+Fecha y hora: 2025-01-01 23:32:11
+Herramientas seleccionadas: manómetro, sierra electrica
+----------------------------------------------------------------------

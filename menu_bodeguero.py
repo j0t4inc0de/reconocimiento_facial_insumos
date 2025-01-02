@@ -3,7 +3,9 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox as mb
 import os
 import shutil
-
+from datetime import datetime
+import openpyxl
+from openpyxl.styles import Alignment
 # Ruta de la base de datos y directorio de imágenes
 
 # database_path = "C:/Users/FabLab1/Desktop/Sistema Panol - 7/Database/inventario.db"
@@ -79,8 +81,11 @@ class VentanaInventario(tk.Frame):
         self.btn_stock_herramienta = ttk.Button(btn_frame, text="Modificar", command=self.stock_herramienta)
         self.btn_stock_herramienta.pack(side=tk.LEFT, pady=5, padx=5)
         # Buscar herramienta
-        self.btn_buscar_herramienta = ttk.Button(btn_frame, text="Buscar", command=self.buscar_herramienta)
-        self.btn_buscar_herramienta.pack(side=tk.LEFT, pady=5, padx=5)
+        # self.btn_buscar_herramienta = ttk.Button(btn_frame, text="Buscar", command=self.buscar_herramienta)
+        # self.btn_buscar_herramienta.pack(side=tk.LEFT, pady=5, padx=5)
+        # Exportar inventario a excel
+        self.btn_excel_herramienta = ttk.Button(btn_frame, text="Exportar Excel", command=self.exportar_excel)
+        self.btn_excel_herramienta.pack(side=tk.LEFT, pady=5, padx=5)
 
         # Configurar Treeview
         style = ttk.Style()
@@ -101,6 +106,36 @@ class VentanaInventario(tk.Frame):
         
         self.cargar_pedidos()
         
+    def exportar_excel(self):
+        """Exporta los datos del inventario a un archivo Excel."""
+        try:
+            # Crear el archivo Excel
+            wb = openpyxl.Workbook()
+            ws = wb.active
+            ws.title = "Inventario"
+
+            # Agregar encabezados
+            encabezados = ["Categoría", "Herramienta", "Existencia"]
+            ws.append(encabezados)
+
+            for cell in ws[1]:
+                cell.alignment = Alignment(horizontal="center", vertical="center")
+
+            # Agregar los datos del Treeview
+            for item in self.tree.get_children():
+                valores = self.tree.item(item, "values")
+                ws.append(valores)
+            fecha_hora = datetime.now().strftime("%m-%d-%H-%M")
+            fecha_hora_str =str(fecha_hora)
+            nombre_archivo = fecha_hora_str+".xlsx"
+            # Guardar archivo
+            print(nombre_archivo)
+            archivo_path = nombre_archivo
+            wb.save(archivo_path)
+            mb.showinfo("Éxito", f"Inventario exportado exitosamente a {archivo_path}\nmes/dia/hora/minutos...")
+
+        except Exception as e:
+            mb.showerror("Error", f"Ocurrió un error al exportar a Excel: {e}")
     def cargar_pedidos(self):
         """Carga los datos de la tabla 'pedidos' en el Treeview."""
         try:
@@ -153,7 +188,7 @@ class VentanaAnadir(tk.Toplevel):
     def guardar_herramienta(self):
 
         categoria = self.entry_categoria.get()
-        herramienta = self.entry_herramienta.get()
+        herramienta = self.entry_herramienta.get().lower()
         stock = self.entry_stock.get()
 
         # Validar los datos ingresados
@@ -283,7 +318,7 @@ class VentanaStock(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
         self.title("Modificar Herramienta")
-        self.geometry("300x250")
+        self.geometry("300x300")
         self.crear_formulario()
 
     def crear_formulario(self):
@@ -724,7 +759,9 @@ class AplicacionPrincipal(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Aplicación Principal")
-        self.geometry("1080x720")
+        # self.geometry("1080x720")
+        self.state("zoomed")
+        
         # Crear el menú principal
         self.menu_bar = tk.Menu(self)
         self.config(menu=self.menu_bar)
