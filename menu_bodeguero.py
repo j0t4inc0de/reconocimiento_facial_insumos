@@ -147,7 +147,11 @@ class VentanaInventario(tk.Frame):
             # Cargar los datos desde la base de datos
             conn = sqlite3.connect(database_path)
             cursor = conn.cursor()
-            cursor.execute("SELECT categoria, herramienta, existencia FROM herramientas")
+            cursor.execute("""
+                SELECT categoria, herramienta, existencia 
+                FROM herramientas 
+                ORDER BY categoria ASC, herramienta ASC
+            """)
             registros = cursor.fetchall()
             conn.close()
             for registro in registros:
@@ -232,9 +236,18 @@ class VentanaAnadir(tk.Toplevel):
     def cargar_pedidos(self):
         """Carga los datos de la tabla 'pedidos' en el Treeview."""
         try:
+            # Limpiar el Treeview
+            for item in self.tree.get_children():
+                self.tree.delete(item)
+
+            # Cargar los datos desde la base de datos
             conn = sqlite3.connect(database_path)
             cursor = conn.cursor()
-            cursor.execute("SELECT categoria, herramienta, existencia FROM herramientas")
+            cursor.execute("""
+                SELECT categoria, herramienta, existencia 
+                FROM herramientas 
+                ORDER BY categoria ASC, herramienta ASC
+            """)
             registros = cursor.fetchall()
             conn.close()
             for registro in registros:
