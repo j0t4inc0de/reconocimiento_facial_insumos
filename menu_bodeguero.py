@@ -10,10 +10,10 @@ from openpyxl.styles import Alignment
 
 # database_path = "C:/Users/FabLab1/Desktop/Sistema Panol - 7/Database/inventario.db"
 # dataset_dir = "C:/Users/FabLab1/Desktop/Sistema Panol - 7/Dataset"
-# database_path = "Database/inventario.db"
-# dataset_dir = "Dataset"
-database_path = "E:/OneDrive/OneDrive - INACAP/Desktop/Ficheros Panol/reconocimiento_facial_insumos-4/Database/inventario.db"
-dataset_dir = "E:/OneDrive/OneDrive - INACAP/Desktop/Ficheros Panol/reconocimiento_facial_insumos-4/Dataset"
+database_path = "Database/inventario.db"
+dataset_dir = "Dataset"
+# database_path = "E:/OneDrive/OneDrive - INACAP/Desktop/Ficheros Panol/reconocimiento_facial_insumos-4/Database/inventario.db"
+# dataset_dir = "E:/OneDrive/OneDrive - INACAP/Desktop/Ficheros Panol/reconocimiento_facial_insumos-4/Dataset"
 
 icon_path = "icono.ico"
 class VentanaInicio(tk.Frame):
@@ -140,6 +140,11 @@ class VentanaInventario(tk.Frame):
     def cargar_pedidos(self):
         """Carga los datos de la tabla 'pedidos' en el Treeview."""
         try:
+            # Limpiar el Treeview
+            for item in self.tree.get_children():
+                self.tree.delete(item)
+
+            # Cargar los datos desde la base de datos
             conn = sqlite3.connect(database_path)
             cursor = conn.cursor()
             cursor.execute("SELECT categoria, herramienta, existencia FROM herramientas")
@@ -150,6 +155,7 @@ class VentanaInventario(tk.Frame):
 
         except sqlite3.Error as e:
             mb.showerror("Error", f"Ocurrió un error al cargar los pedidos: {e}")
+
             
     def nueva_herramienta(self):
         ventana = VentanaAnadir(self)
@@ -215,6 +221,7 @@ class VentanaAnadir(tk.Toplevel):
             conn.close()
 
             mb.showinfo("Éxito", "Herramienta añadida correctamente.")
+            self.master.cargar_pedidos()
             self.destroy()
         except sqlite3.Error as e:
             mb.showerror("Error", f"No se pudo guardar la herramienta: {e}")
@@ -311,6 +318,7 @@ class VentanaEliminar(tk.Toplevel):
             conn.close()
 
             mb.showinfo("Éxito", "La herramienta ha sido eliminada correctamente.")
+            self.master.cargar_pedidos()
             self.destroy()
         except sqlite3.Error as e:
             mb.showerror("Error", f"No se pudo eliminar la herramienta: {e}")
@@ -410,7 +418,7 @@ class VentanaStock(tk.Toplevel):
             conn.commit()
             conn.close()
             mb.showinfo("Éxito", "Herramienta actualizada correctamente.")
-            
+            self.master.cargar_pedidos()
             self.destroy()
         except sqlite3.Error as e:
             mb.showerror("Error", f"No se pudo actualizar la herramienta: {e}")
