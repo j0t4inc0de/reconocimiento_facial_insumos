@@ -62,28 +62,45 @@ class VentanaInventario(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
 
-        ttk.Label(self, text="Inventario", font=("Arial", 18)).pack(pady=10)
+        # Botones
+        btn_frame = ttk.Frame(self, style="Content.TFrame")
+        btn_frame.pack(fill="both", expand=False)
+        
+        style = ttk.Style()
+        style.configure("Content.TFrame")
+        
+        # Añadir nueva herramienta
+        self.btn_nueva_herramienta = ttk.Button(btn_frame, text="Nueva", command=self.nueva_herramienta)
+        self.btn_nueva_herramienta.pack(side=tk.LEFT, pady=5, padx=5)
+        # Eliminar herramienta
+        self.btn_eliminar_herramienta = ttk.Button(btn_frame, text="Eliminar", command=self.eliminar_herramienta)
+        self.btn_eliminar_herramienta.pack(side=tk.LEFT, pady=5, padx=5)
+        # Añadir stock
+        self.btn_stock_herramienta = ttk.Button(btn_frame, text="Modificar", command=self.stock_herramienta)
+        self.btn_stock_herramienta.pack(side=tk.LEFT, pady=5, padx=5)
+        # Buscar herramienta
+        self.btn_buscar_herramienta = ttk.Button(btn_frame, text="Buscar", command=self.buscar_herramienta)
+        self.btn_buscar_herramienta.pack(side=tk.LEFT, pady=5, padx=5)
 
-        # Style letras mas grande
+        # Configurar Treeview
         style = ttk.Style()
         style.configure('Treeview', font=('Arial', 11))
         style.configure('Treeview.Heading', font=('Arial', 13))
 
         columnas = ("categoria", "herramienta", "existencia")
         self.tree = ttk.Treeview(self, columns=columnas, show="headings", style='Treeview')
-        self.tree.heading("categoria", text="Categoria")
+        self.tree.heading("categoria", text="Categoría")
         self.tree.heading("herramienta", text="Herramienta")
         self.tree.heading("existencia", text="Existencia")
 
-        self.tree.column("categoria", width=2, anchor="center")
-        self.tree.column("herramienta", width=90, anchor="center")
+        self.tree.column("categoria", width=120, anchor="center")
+        self.tree.column("herramienta", width=120, anchor="center")
         self.tree.column("existencia", width=110, anchor="center")
 
         self.tree.pack(fill="both", expand=True, padx=10, pady=10)
-
-        # Cargar los datos desde la base de datos
+        
         self.cargar_pedidos()
-
+        
     def cargar_pedidos(self):
         """Carga los datos de la tabla 'pedidos' en el Treeview."""
         try:
@@ -98,6 +115,307 @@ class VentanaInventario(tk.Frame):
         except sqlite3.Error as e:
             mb.showerror("Error", f"Ocurrió un error al cargar los pedidos: {e}")
             
+    def nueva_herramienta(self):
+        ventana = VentanaAnadir(self)
+        ventana.grab_set()
+
+    def eliminar_herramienta(self):
+        ventana = VentanaEliminar(self)
+        ventana.grab_set()
+
+    def stock_herramienta(self):
+        ventana = VentanaStock(self)
+        ventana.grab_set()
+
+    def buscar_herramienta(self):
+        ventana = VentanaBuscar(self)
+        ventana.grab_set()
+
+class VentanaAnadir(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.title("Nueva Herramienta")
+        self.geometry("300x150")
+        self.crear_formulario()
+
+    def crear_formulario(self):
+        self.entry_categoria = PlaceholderEntry(self, "Ingrese la categoría", width=35)
+        self.entry_categoria.pack(pady=5)
+
+        self.entry_herramienta = PlaceholderEntry(self, "Ingrese el nombre de la herramienta", width=35)
+        self.entry_herramienta.pack(pady=5)
+
+        self.entry_stock = PlaceholderEntry(self, "Ingrese la cantidad de stock", width=35)
+        self.entry_stock.pack(pady=5)
+
+        ttk.Button(self, text="Guardar", command=self.guardar_herramienta).pack(pady=10)
+
+    def guardar_herramienta(self):
+
+        categoria = self.entry_categoria.get()
+        herramienta = self.entry_herramienta.get()
+        stock = self.entry_stock.get()
+
+        # Validar los datos ingresados
+        if not categoria or categoria == "Ingrese la categoría":
+            mb.showerror("Error", "Por favor, ingrese una categoría válida.")
+            return
+        if not herramienta or herramienta == "Ingrese el nombre de la herramienta":
+            mb.showerror("Error", "Por favor, ingrese un nombre de herramienta válido.")
+            return
+        if not stock.isdigit():
+            mb.showerror("Error", "Por favor, ingrese una cantidad de stock válida.")
+            return
+
+        try:
+            # Conectar a la base de datos y realizar la inserción
+            conn = sqlite3.connect(database_path)
+            cursor = conn.cursor()
+            cursor.execute(
+                "INSERT INTO herramientas (categoria, herramienta, existencia) VALUES (?, ?, ?)",
+                (categoria, herramienta, int(stock))
+            )
+            conn.commit()
+            conn.close()
+
+            mb.showinfo("Éxito", "Herramienta añadida correctamente.")
+            self.destroy()
+        except sqlite3.Error as e:
+            mb.showerror("Error", f"No se pudo guardar la herramienta: {e}")
+            
+        print("Herramienta añadida.")
+        self.destroy()
+        
+    def cargar_pedidos(self):
+        """Carga los datos de la tabla 'pedidos' en el Treeview."""
+        try:
+            conn = sqlite3.connect(database_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT categoria, herramienta, existencia FROM herramientas")
+            registros = cursor.fetchall()
+            conn.close()
+            for registro in registros:
+                self.tree.insert("", "end", values=registro)
+
+        except sqlite3.Error as e:
+            mb.showerror("Error", f"Ocurrió un error al cargar los pedidos: {e}")
+
+class VentanaEliminar(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.title("Eliminar Herramienta")
+        self.geometry("350x180")
+        self.crear_formulario()
+
+    def crear_formulario(self):
+        ttk.Label(self, text="Seleccione la categoría:").pack(pady=5)
+        
+        # Combobox para seleccionar categoría
+        self.combo_categoria = ttk.Combobox(self, state="readonly", width=32)
+        self.combo_categoria.pack(pady=5)
+        self.cargar_categorias()
+
+        ttk.Label(self, text="Seleccione la herramienta:").pack(pady=5)
+        
+        # Combobox para seleccionar herramienta
+        self.combo_herramienta = ttk.Combobox(self, state="readonly", width=32)
+        self.combo_herramienta.pack(pady=5)
+
+        # Actualizar herramientas al seleccionar una categoría
+        self.combo_categoria.bind("<<ComboboxSelected>>", self.actualizar_herramientas)
+
+        ttk.Button(self, text="Eliminar", command=self.eliminar_herramienta).pack(pady=10)
+
+    def cargar_categorias(self):
+        """Carga las categorías desde la base de datos."""
+        try:
+            conn = sqlite3.connect(database_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT DISTINCT categoria FROM herramientas")
+            categorias = [row[0] for row in cursor.fetchall()]
+            conn.close()
+            self.combo_categoria['values'] = categorias
+        except sqlite3.Error as e:
+            mb.showerror("Error", f"No se pudieron cargar las categorías: {e}")
+
+    def actualizar_herramientas(self, event):
+        """Carga las herramientas disponibles en la categoría seleccionada."""
+        categoria_seleccionada = self.combo_categoria.get()
+        if not categoria_seleccionada:
+            return
+
+        try:
+            conn = sqlite3.connect(database_path)
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT herramienta FROM herramientas WHERE categoria = ?", (categoria_seleccionada,)
+            )
+            herramientas = [row[0] for row in cursor.fetchall()]
+            conn.close()
+            self.combo_herramienta['values'] = herramientas
+            self.combo_herramienta.set('')  # Reinicia el valor actual del combobox
+        except sqlite3.Error as e:
+            mb.showerror("Error", f"No se pudieron cargar las herramientas: {e}")
+
+    def eliminar_herramienta(self):
+        """Elimina la herramienta seleccionada."""
+        herramienta_seleccionada = self.combo_herramienta.get()
+        
+        if not herramienta_seleccionada:
+            mb.showerror("Error", "Seleccione una herramienta para eliminar.")
+            return
+
+        try:
+            conn = sqlite3.connect(database_path)
+            cursor = conn.cursor()
+            cursor.execute(
+                "DELETE FROM herramientas WHERE herramienta = ?", (herramienta_seleccionada,)
+            )
+            conn.commit()
+            conn.close()
+
+            mb.showinfo("Éxito", "La herramienta ha sido eliminada correctamente.")
+            self.destroy()
+        except sqlite3.Error as e:
+            mb.showerror("Error", f"No se pudo eliminar la herramienta: {e}")
+
+class VentanaStock(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.title("Modificar Herramienta")
+        self.geometry("300x250")
+        self.crear_formulario()
+
+    def crear_formulario(self):
+        ttk.Label(self, text="Seleccione la categoría:").pack(pady=5)
+        self.combobox_categoria = ttk.Combobox(self, state="readonly")
+        self.combobox_categoria.pack(pady=5)
+        self.combobox_categoria.bind("<<ComboboxSelected>>", self.actualizar_herramientas)
+
+        ttk.Label(self, text="Seleccione la herramienta:").pack(pady=5)
+        self.combobox_herramienta = ttk.Combobox(self, state="readonly")
+        self.combobox_herramienta.pack(pady=5)
+        self.combobox_herramienta.bind("<<ComboboxSelected>>", self.cargar_datos_herramienta)
+
+        ttk.Label(self, text="Información a editar:").pack(pady=5)
+
+        ttk.Label(self, text="Cantidad:").pack(pady=0)
+        self.entry_stock = ttk.Entry(self, width=35)
+        self.entry_stock.pack(pady=5)
+
+        ttk.Label(self, text="Categoría:").pack(pady=0)
+        self.entry_categoria = ttk.Entry(self, width=35)
+        self.entry_categoria.pack(pady=5)
+
+        ttk.Button(self, text="Actualizar", command=self.actualizar_herramienta).pack(pady=10)
+
+        self.cargar_categorias()
+
+    def cargar_categorias(self):
+        try:
+            conn = sqlite3.connect(database_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT DISTINCT categoria FROM herramientas")
+            categorias = [fila[0] for fila in cursor.fetchall()]
+            conn.close()
+            self.combobox_categoria["values"] = categorias
+        except sqlite3.Error as e:
+            mb.showerror("Error", f"No se pudieron cargar las categorías: {e}")
+
+    def actualizar_herramientas(self, event):
+        categoria_seleccionada = self.combobox_categoria.get()
+        try:
+            conn = sqlite3.connect(database_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT herramienta FROM herramientas WHERE categoria = ?", (categoria_seleccionada,))
+            herramientas = [fila[0] for fila in cursor.fetchall()]
+            conn.close()
+            self.combobox_herramienta["values"] = herramientas
+        except sqlite3.Error as e:
+            mb.showerror("Error", f"No se pudieron cargar las herramientas: {e}")
+
+    def cargar_datos_herramienta(self, event):
+        herramienta_seleccionada = self.combobox_herramienta.get()
+        try:
+            conn = sqlite3.connect(database_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT categoria, existencia FROM herramientas WHERE herramienta = ?", (herramienta_seleccionada,))
+            datos = cursor.fetchone()
+            conn.close()
+            if datos:
+                categoria_actual, stock_actual = datos
+                self.entry_categoria.delete(0, tk.END)
+                self.entry_categoria.insert(0, categoria_actual)
+                self.entry_stock.delete(0, tk.END)
+                self.entry_stock.insert(0, str(stock_actual))
+        except sqlite3.Error as e:
+            mb.showerror("Error", f"No se pudieron cargar los datos de la herramienta: {e}")
+
+    def actualizar_herramienta(self):
+        herramienta_seleccionada = self.combobox_herramienta.get()
+        nueva_categoria = self.entry_categoria.get()
+        nuevo_stock = self.entry_stock.get()
+
+        if not herramienta_seleccionada:
+            mb.showwarning("Advertencia", "Seleccione una herramienta para actualizar.")
+            return
+
+        if not nuevo_stock.isdigit():
+            mb.showwarning("Advertencia", "Ingrese un número válido para la cantidad.")
+            return
+
+        try:
+            conn = sqlite3.connect(database_path)
+            cursor = conn.cursor()
+            cursor.execute(
+                "UPDATE herramientas SET categoria = ?, existencia = ? WHERE herramienta = ?",
+                (nueva_categoria, int(nuevo_stock), herramienta_seleccionada),
+            )
+            conn.commit()
+            conn.close()
+            mb.showinfo("Éxito", "Herramienta actualizada correctamente.")
+            
+            self.destroy()
+        except sqlite3.Error as e:
+            mb.showerror("Error", f"No se pudo actualizar la herramienta: {e}")
+
+class VentanaBuscar(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.title("Buscar Herramienta")
+        self.geometry("300x150")
+        self.crear_formulario()
+
+    def crear_formulario(self):
+        self.entry_buscar = PlaceholderEntry(self, "Ingrese el nombre de la herramienta")
+        self.entry_buscar.pack(pady=5)
+
+        ttk.Button(self, text="Buscar", command=self.buscar_herramienta).pack(pady=10)
+
+    def buscar_herramienta(self):
+        print("Herramienta buscada.")
+        self.destroy()
+
+class PlaceholderEntry(ttk.Entry):
+    """Un Entry con soporte para placeholder."""
+    def __init__(self, parent, placeholder, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.placeholder = placeholder
+        self.default_fg_color = self['foreground']
+        self.bind("<FocusIn>", self._clear_placeholder)
+        self.bind("<FocusOut>", self._add_placeholder)
+        self._add_placeholder()
+
+    def _clear_placeholder(self, event=None):
+        if self.get() == self.placeholder:
+            self.delete(0, "end")
+            self['foreground'] = self.default_fg_color
+
+    def _add_placeholder(self, event=None):
+        if not self.get():
+            self.insert(0, self.placeholder)
+            self['foreground'] = 'grey'
+                    
 class VentanaHistorial(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
@@ -442,7 +760,7 @@ class AplicacionPrincipal(tk.Tk):
 
     def mostrar_registro_estudiantes(self):
         self.cambiar_ventana(VentanaRegistroEstudiantes)
-
+        
     def cambiar_ventana(self, ventana_clase):
         # Eliminar el frame anterior, si existe
         for widget in self.contenedor.winfo_children():
