@@ -81,8 +81,8 @@ class VentanaInventario(tk.Frame):
         self.btn_stock_herramienta = ttk.Button(btn_frame, text="Modificar", command=self.stock_herramienta)
         self.btn_stock_herramienta.pack(side=tk.LEFT, pady=5, padx=5)
         # Buscar herramienta
-        # self.btn_buscar_herramienta = ttk.Button(btn_frame, text="Buscar", command=self.buscar_herramienta)
-        # self.btn_buscar_herramienta.pack(side=tk.LEFT, pady=5, padx=5)
+        self.btn_buscar_herramienta = ttk.Button(btn_frame, text="Buscar", command=self.buscar_herramienta)
+        self.btn_buscar_herramienta.pack(side=tk.LEFT, pady=5, padx=5)
         # Exportar inventario a excel
         self.btn_excel_herramienta = ttk.Button(btn_frame, text="Exportar Excel", command=self.exportar_excel)
         self.btn_excel_herramienta.pack(side=tk.LEFT, pady=5, padx=5)
@@ -136,6 +136,7 @@ class VentanaInventario(tk.Frame):
 
         except Exception as e:
             mb.showerror("Error", f"Ocurrió un error al exportar a Excel: {e}")
+            
     def cargar_pedidos(self):
         """Carga los datos de la tabla 'pedidos' en el Treeview."""
         try:
@@ -457,16 +458,19 @@ class VentanaHistorial(tk.Frame):
 
         ttk.Label(self, text="Historial", font=("Arial", 18)).pack(pady=10)
 
-        columnas = ("N° Pedido", "herramientas", "fechaHora")
+        columnas = ("N° Pedido", "herramientas", "fechaHora", "estado")
         self.tree = ttk.Treeview(self, columns=columnas, show="headings")
         
         self.tree.heading("N° Pedido", text="N° Pedido")
         self.tree.heading("fechaHora", text="Fecha y Hora")
         self.tree.heading("herramientas", text="Herramientas")
         self.tree.heading("fechaHora", text="fechaHora")
+        self.tree.heading("estado", text="Estado")
+        
         self.tree.column("N° Pedido", width=20, anchor="center")
         self.tree.column("herramientas", width=550, anchor="center")
         self.tree.column("fechaHora", width=50, anchor="center")
+        self.tree.column("estado", width=50, anchor="center")
 
         self.tree.pack(fill="both", expand=True, padx=10, pady=10)
 
@@ -478,7 +482,7 @@ class VentanaHistorial(tk.Frame):
             conn = sqlite3.connect(database_path)
             cursor = conn.cursor()
 
-            cursor.execute("SELECT pedido_id, herramientas, fechaHora FROM historial")
+            cursor.execute("SELECT pedido_id, herramientas, fechaHora, estado FROM historial")
             registros = cursor.fetchall()
             conn.close()
             for registro in registros:
@@ -503,8 +507,11 @@ class VentanaEscaner(tk.Frame):
         self.id_pedido_entry.pack(pady=5, padx=20, fill="x")
 
         # Botón para buscar pedido
-        ttk.Button(self, text="Buscar Pedido", command=self.buscar_pedido).pack(pady=10)
+        ttk.Button(self, text="Buscar Pedido", command=self.buscar_pedido).pack(pady=5, padx=5)
         self.id_pedido_entry.bind("<Return>", lambda event: self.buscar_pedido())
+        # Botón devolucion
+        # Este boton es para iniciar el proceso de devolucion, es decir escanear las heramientas que antes de prestaron para volver a sumarlas al inventario
+        ttk.Button(self, text="Devolucion", command=self.devolucion).pack(pady=5, padx=5)
         
         # Lista de herramientas solicitadas
         self.lista_herramientas_label = ttk.Label(self, text="", font=("Arial", 12), wraplength=800, justify="left")
@@ -577,6 +584,115 @@ class VentanaEscaner(tk.Frame):
 
         # Pausar la ejecución de la ventana principal hasta que la modal sea cerrada correctamente
         self.wait_window(modal)
+
+    def devolucion(self):
+        """Inicia el proceso de devolución para un pedido finalizado."""
+        pedido_id = self.id_pedido_entry.get().strip()
+
+        if not pedido_id:
+            mb.showwarning("Advertencia", "Ingrese un número de pedido válido.")
+            return
+
+        try:
+            # Verificar que el pedido existe y está finalizado
+            conn = sqlite3.connect(database_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT herramientas FROM pedidos WHERE id = ? AND estado = 'FINALIZADO'", (pedido_id,))
+            herramientas = cursor.fetchone()
+
+            if not herramientas:
+                mb.showwarning("Advertencia", "El pedido no está finalizado o no existe.")
+                conn.close()
+                return
+
+            herramientas_pendientes = herramientas[0].split(", ")  # Asumimos que están separadas por comas
+            herramientas_devueltas = []
+
+            # Crear ventana de devolución
+            devolucion_window = tk.Toplevel(self)
+            devolucion_window.title(f"Devolución - Pedido {pedido_id}")
+            devolucion_window.geometry("400x300")
+            devolucion_window.transient(self)
+            devolucion_window.grab_set()
+
+            ttk.Label(devolucion_window, text=f"Pedido N° {pedido_id}", font=("Arial", 14)).pack(pady=10)
+            lista_pendientes_label = ttk.Label(
+                devolucion_window,
+                text=f"Herramientas pendientes: {', '.join(herramientas_pendientes)}",
+                font=("Arial", 12),
+                wraplength=350,
+                justify="left",
+            )
+            lista_pendientes_label.pack(pady=5)
+
+            lista_devueltas_label = ttk.Label(
+                devolucion_window,
+                text="Herramientas devueltas: ",
+                font=("Arial", 12),
+                wraplength=350,
+                justify="left",
+            )
+            lista_devueltas_label.pack(pady=5)
+
+            ttk.Label(devolucion_window, text="Escanea o ingresa la herramienta:", font=("Arial", 12)).pack(pady=5)
+            herramienta_entry = ttk.Entry(devolucion_window, font=("Arial", 12))
+            herramienta_entry.pack(pady=5, padx=20, fill="x")
+
+            def registrar_devolucion(event=None):
+                herramienta = herramienta_entry.get().strip()
+
+                if herramientas_pendientes:
+                    # Actualizar el stock en la base de datos
+                    try:
+                        cursor.execute(
+                            "UPDATE herramientas SET existencia = existencia + 1 WHERE herramienta = ?",
+                            (herramientas_pendientes[0],),  # Tomar la primera herramienta pendiente
+                        )
+                        conn.commit()
+
+                        herramientas_devueltas.append(herramientas_pendientes.pop(0))  # Remover la herramienta de pendientes
+                        lista_pendientes_label["text"] = f"Herramientas pendientes: {', '.join(herramientas_pendientes)}"
+                        lista_devueltas_label["text"] = f"Herramientas devueltas: {', '.join(herramientas_devueltas)}"
+                        estado_predeterminado = "DEVUELTO"
+
+                        # Limpiar entrada
+                        herramienta_entry.delete(0, tk.END)
+
+                        # Si todas las herramientas fueron devueltas
+                        if not herramientas_pendientes:
+                            # Actualizar el estado del pedido a "Devuelto"
+                            cursor.execute(
+                                "UPDATE pedidos SET estado = 'Devuelto' WHERE id = ?",
+                                (pedido_id,),
+                            )
+
+                            # Insertar en el historial
+                            herramientas_devueltas_str = ", ".join(herramientas_devueltas)  # Convertir lista a cadena
+                            cursor.execute(
+                                """
+                                INSERT INTO historial (pedido_id, herramientas, fechaHora, estado) 
+                                VALUES (?, ?, datetime('now'), ?)
+                                """,
+                                (pedido_id, herramientas_devueltas_str, estado_predeterminado),
+                            )
+                            conn.commit()
+
+                            mb.showinfo("Éxito", "Todas las herramientas han sido devueltas correctamente.")
+                            devolucion_window.destroy()
+
+                    except sqlite3.Error as e:
+                        mb.showerror("Error", f"Ocurrió un error al procesar la devolución: {e}")
+                else:
+                    mb.showwarning("Advertencia", "No hay herramientas pendientes de devolución.")
+
+            herramienta_entry.bind("<Return>", registrar_devolucion)
+
+            ttk.Button(devolucion_window, text="Cerrar", command=devolucion_window.destroy).pack(pady=10)
+
+        except sqlite3.Error as e:
+            mb.showerror("Error", f"No se pudo buscar el pedido: {e}")
+            if conn:
+                conn.close()
 
     def buscar_pedido(self):
         """Verifica si el pedido existe y obtiene su lista de herramientas."""
@@ -651,12 +767,12 @@ class VentanaEscaner(tk.Frame):
 
             # Actualizar el estado del pedido a "FINALIZADO"
             cursor.execute("UPDATE pedidos SET estado = 'FINALIZADO' WHERE id = ?", (self.pedido_id,))
-
+            estado_predeterminado = "PRESTADO"
             # Guardar en la tabla historial
             herramientas_finalizadas = ", ".join([f"{herr}: {cod}" for herr, cod in self.herramientas_escaneadas])
             cursor.execute(
-                "INSERT INTO historial (pedido_id, herramientas, fechaHora) VALUES (?, ?, datetime('now'))",
-                (self.pedido_id, herramientas_finalizadas)
+                "INSERT INTO historial (pedido_id, herramientas, fechaHora, estado) VALUES (?, ?, datetime('now'), ?)",
+                (self.pedido_id, herramientas_finalizadas, estado_predeterminado)
             )
             conn.commit()
             conn.close()
