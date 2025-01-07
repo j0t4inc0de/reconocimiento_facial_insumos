@@ -19,6 +19,9 @@ reconociendo_path = "img/reconociendo_rostro.png"
 inventario_path = "Excel/Inventario.xlsx"
 database_path = "Database/inventario.db"
 
+archivo = open("direccionCamaraIp.txt", "r")
+camara_ip = archivo.read()
+
 class VentanaInicio:
     print("- - - - - - - - - - - - - - -\nSe abrio Ventana Inicio\n- - - - - - - - - - - - - - - \n") # Validacion
     def __init__(self, root, codificaciones):
@@ -95,7 +98,11 @@ class VentanaCamara:
     def iniciar_camara(self):
         print("- - - - - - - - - - - - - - -\nSe abrió la cámara\n- - - - - - - - - - - - - - - \n")  # Validación
         
-        cap = cv2.VideoCapture(0)
+        # Se agrega esta linea para hacer uso de la camara IP
+        camera_url = camara_ip
+        print(camera_url)
+        cap = cv2.VideoCapture(camera_url)
+        # cap = cv2.VideoCapture(0)
 
         reconocida = False
         tiempo_inicio = time.time()

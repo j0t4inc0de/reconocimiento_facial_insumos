@@ -1,0 +1,1 @@
+rtsp://admin-admin:Kayn!%25123a@192.168.1.12:554/stream1
