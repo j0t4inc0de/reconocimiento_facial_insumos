@@ -100,9 +100,9 @@ class VentanaCamara:
         
         # Se agrega esta linea para hacer uso de la camara IP
         camera_url = camara_ip
-        print(camera_url)
+        print(camera_url) # Validacion para mostrar el contenido del .txt
         cap = cv2.VideoCapture(camera_url)
-        # cap = cv2.VideoCapture(0)
+        # cap = cv2.VideoCapture(0) # Esta linea es para el uso de una camara conectada
 
         reconocida = False
         tiempo_inicio = time.time()
